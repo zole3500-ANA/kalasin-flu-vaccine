@@ -20,18 +20,18 @@ export const hospitals = [
 ] as const;
 
 export const categories = [
-  { key: "doctors", label: "แพทย์", group: "บุคลากรทางการแพทย์" },
-  { key: "pharmacists", label: "เภสัชกร", group: "บุคลากรทางการแพทย์" },
-  { key: "nurses", label: "พยาบาล", group: "บุคลากรทางการแพทย์" },
-  { key: "lab", label: "เจ้าหน้าที่ห้องปฏิบัติการ", group: "บุคลากรทางการแพทย์" },
-  { key: "publicHealth", label: "นักวิชาการ/เจ้าพนักงานสาธารณสุข", group: "บุคลากรทางการแพทย์" },
-  { key: "interns", label: "นักศึกษาฝึกงาน", group: "บุคลากรทางการแพทย์" },
-  { key: "medicalOtherRisk", label: "เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ", group: "บุคลากรทางการแพทย์" },
-  { key: "medicalOther", label: "อื่น ๆ (บุคลากรทางการแพทย์)", group: "บุคลากรทางการแพทย์" },
-  { key: "investigation", label: "ทีมสอบสวนโรค", group: "กลุ่มงานเสี่ยง" },
-  { key: "livestock", label: "ทีมทำลายสัตว์ปีก/ปศุสัตว์", group: "กลุ่มงานเสี่ยง" },
-  { key: "fieldOtherRisk", label: "เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ", group: "กลุ่มงานเสี่ยง" },
-  { key: "fieldOther", label: "อื่น ๆ (นอกกลุ่มเสี่ยง)", group: "กลุ่มงานเสี่ยง" },
+  { key: "doctors", label: "แพทย์", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "pharmacists", label: "เภสัชกร", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "nurses", label: "พยาบาล", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "lab", label: "เจ้าหน้าที่ห้องปฏิบัติการ", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "publicHealth", label: "นักวิชาการ/เจ้าพนักงานสาธารณสุข", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "interns", label: "นักศึกษาฝึกงาน", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "medicalOtherRisk", label: "เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "medicalOther", label: "อื่น ๆ (นอกกลุ่มเสี่ยงบุคลากรทางการแพทย์ เช่น อสม. ฝ่ายปกครอง)", group: "บุคลากรทางการแพทย์ในโรงพยาบาล" },
+  { key: "investigation", label: "ทีมสอบสวนโรค", group: "กลุ่มงานเสี่ยงในสำนักงานสาธารณสุขอำเภอ" },
+  { key: "livestock", label: "ทีมทำลายสัตว์ปีก/ปศุสัตว์", group: "กลุ่มงานเสี่ยงในสำนักงานสาธารณสุขอำเภอ" },
+  { key: "fieldOtherRisk", label: "เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ", group: "กลุ่มงานเสี่ยงในสำนักงานสาธารณสุขอำเภอ" },
+  { key: "fieldOther", label: "อื่น ๆ (นอกกลุ่มเสี่ยง)", group: "กลุ่มงานเสี่ยงในสำนักงานสาธารณสุขอำเภอ" },
 ] as const;
 
 export type CategoryKey = (typeof categories)[number]["key"];
