@@ -58,6 +58,24 @@ export default function Home() {
   // Selected hospital for modal sheet
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  // Read URL search params for deep linking
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlMode = params.get("mode");
+      if (urlMode === "survey_2570" || urlMode === "report_2569") {
+        setMode(urlMode);
+      }
+      if (params.get("print") === "1" || params.get("print") === "true") {
+        setShowPrintModal(true);
+      }
+      const hosp = params.get("hospital");
+      if (hosp) {
+        setSelectedId(hosp);
+      }
+    }
+  }, []);
+
   // Form states for 2569 Report
   const [allocated, setAllocated] = useState(0);
   const [reportCounts, setReportCounts] = useState<Counts>(emptyCounts);
