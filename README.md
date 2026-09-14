@@ -1,126 +1,177 @@
-# vinext-starter
 
-A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
+# ระบบบริหารจัดการวัคซีนไข้หวัดใหญ่สำหรับบุคลากรทางการแพทย์และสาธารณสุข จังหวัดกาฬสินธุ์
+### Kalasin Healthcare Personnel Influenza Vaccination Management & Demand Survey System
 
-## Prerequisites
+ระบบเว็บแอปพลิเคชันสำหรับติดตาม รายงานผลการฉีดวัคซีนไข้หวัดใหญ่ (ปีงบประมาณ 2569) และสำรวจความต้องการจัดสรรวัคซีนล่วงหน้า (ปีงบประมาณ 2570) ของโรงพยาบาลและหน่วยบริการสาธารณสุข 18 อำเภอ ในจังหวัดกาฬสินธุ์ พัฒนาด้วย Next.js, React 19, TypeScript และ Cloudflare D1 / Drizzle ORM
 
-- Node.js `>=22.13.0`
-- Portable: Windows, macOS, or Linux; no Bash required
-- Managed Linux: managed Linux runtime with Bash, `flock`, `curl`, `sha256sum`, and GNU `timeout`
-- Git is required only for publishing
+---
 
-## Sites Lifecycle
+## 🌟 ฟังก์ชันและฟีเจอร์เด่นของระบบ (Core Features)
 
-The Sites initializer copies the shared starter and selects managed-linux only when `SITES_MANAGED_LINUX_CONTAINER=1`; otherwise it selects portable. It saves the selection only in ignored `.sites-runtime/execution-profile.json`. Both profiles copy/configure first, then use the plugin's separate `install-dependencies.mjs` step to measure installation independently. Edit source under `app/` and follow the Sites skill for installation, preview, builds, and publishing.
+### 1. 💉 โมดูลรายงานผลการฉีดวัคซีน ปี 2569 (Vaccination Results Report 2569)
+* **ติดตามผลฉีดจริงเทียบยอดจัดสรร**: บันทึกยอดจัดสรรวัคซีน (โดส) และยอดฉีดจริงแยกราย 12 กลุ่มบุคลากร
+* **ระบบคำนวณอัตโนมัติ**: แสดงผลรวมผู้ได้รับวัคซีน, ร้อยละความครอบคลุม (Coverage %), และยอดวัคซีนคงเหลือ
+* **ระบบตรวจสอบความถูกต้อง (Validation)**: ป้องกันการกรอกยอดฉีดรวมเกินกว่ายอดที่ได้รับจัดสรร
+* **ระบบแนบไฟล์รายชื่อและหลักฐาน**: รองรับการอัปโหลดไฟล์เอกสารรายชื่อผู้รับวัคซีนจริงและรูปถ่ายกิจกรรม (PDF, Excel, CSV, รูปภาพ JPG/PNG)
+* **Google Drive Auto-Sync**: ไฟล์ที่อัปโหลดจะถูกจัดระเบียบและบันทึกสำเนาลงใน Google Drive ของหน่วยงานโดยอัตโนมัติ
+* **ส่งออกข้อมูล CSV**: ดาวน์โหลดรายงานสรุปแยกรายอำเภอและรายกลุ่มบุคลากรในรูปแบบ CSV (UTF-8 with BOM สำหรับเปิดใน Microsoft Excel ได้ทันที)
 
-Whenever reopening or moving a checkout, run `node <plugin-root>/scripts/configure-execution-profile.mjs` before project commands. Profile changes do not alter tracked source or require reinstalling otherwise-valid dependencies; restart an existing preview to use the new selection. Do not commit or upload `.sites-runtime/`.
+### 2. 📋 โมดูลสำรวจความต้องการวัคซีน ปี 2570 (Vaccine Demand Survey 2570)
+* **สำรวจยอดล่วงหน้า**: บันทึกจำนวนบุคลากรเป้าหมายรวม และยอดขอรับจัดสรรแยกราย 11 กลุ่มบุคลากร
+* **ปรับกลุ่มเป้าหมายเฉพาะบุคลากรทางการแพทย์**: ตัดกลุ่ม *"อื่น ๆ (นอกกลุ่มเสี่ยงบุคลากรทางการแพทย์ เช่น อสม. ฝ่ายปกครอง)"* ออก เพื่อให้เฉพาะเจาะจงตามนโยบายจัดสรรปี 2570
+* **ไม่ต้องแนบรายชื่อบุคลากร**: ตัดขั้นตอนการอัปโหลดเอกสารออก เพื่อให้หน่วยบริการสำรวจและส่งยอดตัวเลขคาดการณ์ได้อย่างสะดวกรวดเร็ว
+* **บันทึกข้อมูลผู้ประสานงาน**: บันทึกชื่อ-นามสกุล, ตำแหน่ง/กลุ่มงาน, และเบอร์โทรศัพท์ติดต่อของเจ้าหน้าที่ผู้รับผิดชอบ
+* **ส่งออกข้อมูล CSV**: ส่งออกตารางแบบสำรวจปี 2570 พร้อมข้อมูลผู้ประสานงานและหมายเหตุ
 
-This starter does not use `wrangler.jsonc`.
+### 3. 🎨 ธีมสีแยกปีชัดเจน (Dynamic Theming)
+* **ปี 2569 (ผลการฉีด)**: ธีมสีเขียวหัวเป็ด (Deep Teal) สื่อถึงความสมบูรณ์และงานบริการสุขภาพ
+* **ปี 2570 (สำรวจความต้องการ)**: ธีมสีฟ้าสดใส (Sky Blue) สื่อถึงการวางแผนงานล่วงหน้า ป้องกันผู้ใช้งานสับสนระหว่างปี
 
-`install:ci` runs `npm ci` once against the shared lockfile, disables parent-workspace discovery, and includes required dev/optional dependencies despite production/omit settings. Sharp defaults to prebuilt binaries unless explicitly configured otherwise. Do not overlap installers.
+### 4. 📱 รองรับการใช้งานบนมือถือเต็มรูปแบบ (Mobile Responsive & Touch-Friendly)
+* **Mobile Card View**: ปรับการแสดงผลอัตโนมัติจากการ์ดตารางขนาดใหญ่ เป็นการ์ดข้อมูลรายโรงพยาบาลที่อ่านง่ายบนสมาร์ทโฟน
+* **Sticky Bottom Navigation**: แถบสลับปี 2569 / 2570 ด้านล่างหน้าจอมือถือ พร้อมตัวเลข Badge แสดงจำนวนโรงพยาบาลที่รายงานแล้วแบบ Realtime
+* **Touch-Optimized Form**: หน้าต่างบันทึกข้อมูล (Slide-over Sheet Modal) ปรับขนาดพอดีหน้าจอมือถือ ป้องกันการเด้งซูมเข้าออกของเบราว์เซอร์
 
-- **Portable:** Preserve host HOME, npm cache, registry, proxy, temporary paths, retry/concurrency settings, and lifecycle-script policy. Use `--prefer-offline --no-audit --no-fund`.
-- **Managed Linux:** Use the existing project-local HOME/cache/tmp setup and Linux install lock, tarball preflight, and timeout. Restore the image-seeded npm cache only when its lockfile hash matches; retain network fallback. Builds keep their existing timeout. These helpers are not invoked by the portable profile.
+### 5. 🖨️ ระบบพิมพ์รายงานทางการขนาด A4 (Official Print / PDF Report)
+* ปุ่ม **"พิมพ์สรุปภาพรวม A4"** จัดหน้ารายงานทางการของสำนักงานสาธารณสุขจังหวัดกาฬสินธุ์
+* สรุปตารางผลงาน 18 อำเภอ พร้อมยอดรวมระดับจังหวัด
+* มีช่องลงนาม 3 ฝ่ายมาตรฐานราชการ:
+  1. ผู้จัดทำรายงาน (นายชนะชัย มาตย์คำมี)
+  2. ผู้ตรวจสอบรายงาน (หัวหน้ากลุ่มงานควบคุมโรคติดต่อ)
+  3. ผู้อนุมัติรายงาน (นายแพทย์สาธารณสุขจังหวัดกาฬสินธุ์)
+* พร้อมสั่งพิมพ์หรือ Save as PDF ได้ทันที
 
-`scripts/sites-env.mjs` preserves the caller's HOME, npm cache, proxy, XDG, and temporary-directory configuration while defaulting Wrangler and Miniflare state to the checkout. If npm reports an unwritable cache, select a writable path with `npm_config_cache` for that install. The `dev` and `start` scripts also keep Wrangler logs inside the checkout. Generated `.sites-runtime/` and `.wrangler/` directories are disposable and ignored by Git.
+### 6. 🔍 ตัวกรองสถานะด่วน (Status Filters)
+* `ทั้งหมด (18)`
+* `⚠️ รอรายงาน / ยังไม่ส่ง`: สำหรับเจ้าหน้าที่ สสจ. กดดูรายชื่อโรงพยาบาลที่ยังค้างส่ง เพื่อโทรประสานงานได้ทันที
+* `✅ รายงานแล้ว / ส่งแล้ว`: สำหรับตรวจสอบหน่วยงานที่ส่งข้อมูลครบถ้วน
 
-On portable, `npm run dev` uses `vinext dev` with HMR, starting at port 5173. Vinext records the running server in ignored `.vinext/` state, rejects an ordinary duplicate launch, and recovers stale state after a stopped process; exactly simultaneous starts can race. Pass `--port <port>` or `--hostname <host>` after `npm run dev --` when needed; keep portable previews on loopback.
+### 7. 📞 Helpdesk & ผู้ดูแลระบบ สสจ.กาฬสินธุ์
+* แสดงข้อมูลติดต่อชัดเจนในทุกหน้า: **ชนะชัย มาตย์คำมี** กลุ่มงานควบคุมโรคติดต่อ สสจ.กาฬสินธุ์ โทร. **091-747-4080**
 
-On managed Linux, use `sites-preview start` only for requested browser QA. The project's dev script runs Vite and accepts the supervisor's `--host 0.0.0.0 --port 4173 --strictPort` arguments. The internal browser uses `http://terminal.local:4173/`; it is not a user-facing URL. The supervisor owns the preview lifecycle. The ignored local profile survives the supervisor's cleared process environment.
+---
 
-The portable profile simulates ChatGPT sign-in only for loopback development requests. Visit `/signin-with-chatgpt?return_to=/` to sign in as `local_seedy` (`seedy@sites.test`, display name `Seedy`) and `/signout-with-chatgpt?return_to=/` to sign out. The development cookie preserves that identity across server restarts. Mock auth is disabled in the managed-linux profile and is not included in production builds; hosted authentication remains dispatch-owned.
+## 🏥 รายชื่อ 18 หน่วยบริการในจังหวัดกาฬสินธุ์
 
-The Worker uses `vinext/server/fetch-handler`, including Vinext's config-aware image handling. After building, `npm start` runs that Worker locally through Wrangler on `127.0.0.1`, sharing `.wrangler/state` with dev preview and local D1 migrations; it does not deploy the site or simulate sign-in. Use the URL printed by the server. Pass `npm start -- --port <port>` to select a different built-preview port.
+1. โรงพยาบาลกาฬสินธุ์ (อ.เมืองกาฬสินธุ์)
+2. โรงพยาบาลนามน (อ.นามน)
+3. โรงพยาบาลกมลาไสย (อ.กมลาไสย)
+4. โรงพยาบาลร่องคำ (อ.ร่องคำ)
+5. โรงพยาบาลสมเด็จพระยุพราชกุฉินารายณ์ (อ.กุฉินารายณ์)
+6. โรงพยาบาลเขาวง (อ.เขาวง)
+7. โรงพยาบาลยางตลาด (อ.ยางตลาด)
+8. โรงพยาบาลห้วยเม็ก (อ.ห้วยเม็ก)
+9. โรงพยาบาลสหัสขันธ์ (อ.สหัสขันธ์)
+10. โรงพยาบาลคำม่วง (อ.คำม่วง)
+11. โรงพยาบาลท่าคันโท (อ.ท่าคันโท)
+12. โรงพยาบาลหนองกุงศรี (อ.หนองกุงศรี)
+13. โรงพยาบาลสมเด็จ (อ.สมเด็จ)
+14. โรงพยาบาลห้วยผึ้ง (อ.ห้วยผึ้ง)
+15. โรงพยาบาลนาคู (อ.นาคู)
+16. โรงพยาบาลฆ้องชัย (อ.ฆ้องชัย)
+17. โรงพยาบาลดอนจาน (อ.ดอนจาน)
+18. โรงพยาบาลสามชัย (อ.สามชัย)
 
-Local previews use Miniflare's placeholder `Request.cf` metadata without a network lookup. Set `CLOUDFLARE_CF_FETCH_ENABLED=true` to opt into fetching preview metadata; this setting does not change hosted request metadata.
+---
 
-Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=true` to opt in.
+## 👥 กลุ่มบุคลากรในระบบ
 
-## Included Shape
+### สำหรับรายงานผลฉีดปี 2569 (12 กลุ่ม):
+* **กลุ่มบุคลากรทางการแพทย์ในโรงพยาบาล**: แพทย์, เภสัชกร, พยาบาล, เจ้าหน้าที่ห้องปฏิบัติการ, นักวิชาการ/เจ้าพนักงานสาธารณสุข, นักศึกษาฝึกงาน, เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ, อื่น ๆ (นอกกลุ่มเสี่ยงบุคลากรทางการแพทย์ เช่น อสม. ฝ่ายปกครอง)
+* **กลุ่มงานเสี่ยงในสำนักงานสาธารณสุขอำเภอ**: ทีมสอบสวนโรค, ทีมทำลายสัตว์ปีก/ปศุสัตว์, เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ, อื่น ๆ (นอกกลุ่มเสี่ยง)
 
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `@cloudflare/workers-types` provides Worker types; `cloudflare-env.d.ts` declares optional `DB`/`BUCKET` bindings—update these declarations if binding names change
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+### สำหรับสำรวจความต้องการปี 2570 (11 กลุ่ม):
+* **กลุ่มบุคลากรทางการแพทย์ในโรงพยาบาล**: แพทย์, เภสัชกร, พยาบาล, เจ้าหน้าที่ห้องปฏิบัติการ, นักวิชาการ/เจ้าพนักงานสาธารณสุข, นักศึกษาฝึกงาน, เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ *(ตัดกลุ่ม อสม. และฝ่ายปกครองออก)*
+* **กลุ่มงานเสี่ยงในสำนักงานสาธารณสุขอำเภอ**: ทีมสอบสวนโรค, ทีมทำลายสัตว์ปีก/ปศุสัตว์, เจ้าหน้าที่กลุ่มเสี่ยงอื่น ๆ, อื่น ๆ (นอกกลุ่มเสี่ยง)
 
-## Workspace Auth Headers
+---
 
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
+## 🛠️ เทคโนโลยีที่ใช้พัฒนา (Tech Stack)
 
-The user ID is stable for the same user on the same Site and different across Sites. Use it as the durable user key; use email and name for display or contact purposes.
+* **Framework**: [Next.js](https://nextjs.org/) (App Router) + [Vinext](https://github.com/cloudflare/vinext)
+* **Frontend**: React 19, TypeScript, Lucide Icons, Tailwind CSS / Custom CSS Design Tokens
+* **Database & ORM**: SQLite / Cloudflare D1 + [Drizzle ORM](https://orm.drizzle.team/)
+* **UI Components**: Radix UI (Dialog, Sheet, Table, Input, Button)
+* **File Storage / Sync**: Local Storage + Google Drive for Desktop Sync
 
-SIWC-authenticated workspace sites may also receive `oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty `name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by `oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
+---
 
-Treat the full name as optional and fall back to email when it is absent:
+## 🚀 การติดตั้งและเริ่มต้นใช้งาน (Installation & Setup)
 
-```tsx
-import { headers } from "next/headers";
+### ความต้องการของระบบ (Prerequisites)
+* Node.js version `>= 20.0.0` หรือ `>= 22.0.0`
+* npm หรือ yarn / pnpm
 
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
+### ขั้นตอนการรันระบบ (Local Development)
 
-  const displayName = fullName ?? email;
-  // ...
-}
+1. Clone repository:
+```bash
+git clone https://github.com/<username>/<repo-name>.git
+cd <repo-name>
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use the returned `userId` as the stable user key for user-owned records; do not use email as a durable identifier.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send anonymous visitors through Sign in with ChatGPT.
-- In a Server Component, start sign-in with `<a href={chatGPTSignInPath(returnTo)} target="_top">`. The auth helper module is server-only; do not import it into a Client Component.
-- Do not use `fetch`, XHR, a client-side router, or a framework link that can prefetch the sign-in route. SIWC must start as a top-level navigation.
-- Never request the AuthAPI authorization endpoint directly. The dispatch-owned `/signin-with-chatgpt` route must start the SIWC flow.
-- Use `chatGPTSignOutPath(returnTo)` for browser sign-out links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the OAuth cookies, and identity header injection. Do not implement app routes for those reserved paths. Routes that do not import and call the helper remain anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the Sites hosting platform's access policy controls for workspace-wide restrictions, or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Local D1 migrations
-
-For a D1-backed local preview, generate SQL with `npm run db:generate`. Build once through the Sites skill's build entrypoint (or `npm run build` for standalone use) to generate `dist/server/wrangler.json`, rebuilding if bindings change. From the project root, apply each pending migration in order:
-
-```sh
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_example.sql
+2. ติดตั้ง Dependencies:
+```bash
+npm install
 ```
 
-Replace the filename with the pending migration and `DB` with your D1 binding name if different. Use `.wrangler/state`, not `.wrangler/state/v3`; Wrangler adds the versioned directories. Do not replay migrations already applied locally. This updates only the preview database; publishing applies production migrations separately.
+3. รัน Development Server:
+```bash
+npm run dev
+```
 
-## Diagnostic Commands
+4. เปิดเบราว์เซอร์ไปที่:
+```text
+http://localhost:5173
+```
 
-- `npm run install:ci`: perform the one locked dependency install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: preview the built Worker locally with D1/R2 support
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+### การ Build สำหรับ Production
+```bash
+npm run build
+npm start
+```
 
-When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.
+---
 
-The portable build runs Vinext directly without a host `timeout` command. The managed-linux build uses `scripts/build-verified.sh` and its existing `SITES_BUILD_TIMEOUT` setting.
+## 📁 การจัดเก็บไฟล์ Google Drive อัตโนมัติ
 
-## Learn More
+เมื่อมีการอัปโหลดไฟล์หลักฐานในโหมดปี 2569 ระบบจะคัดลอกไฟล์ไปยังโฟลเดอร์ Google Drive ของเครื่องแม่ข่ายอัตโนมัติ:
+```text
+G:\My Drive\วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ\
+└── ปี_2569_รายงานผลการฉีด\
+    ├── โรงพยาบาลกาฬสินธุ์\
+    ├── โรงพยาบาลกมลาไสย\
+    └── ...
+```
+*(สามารถกำหนดโฟลเดอร์ปลายทางได้ผ่านตัวแปรสภาพแวดล้อม `GOOGLE_DRIVE_DIR`)*
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+---
+
+## 📂 โครงสร้างโฟลเดอร์สำคัญ (Project Structure)
+
+```text
+├── app/
+│   ├── api/
+│   │   ├── files/          # API อัปโหลด ดาวน์โหลด และซิงค์ Google Drive
+│   │   ├── reports/        # API บันทึกและดึงข้อมูลผลการฉีดปี 2569
+│   │   └── surveys/        # API บันทึกและดึงข้อมูลแบบสำรวจปี 2570
+│   ├── globals.css         # สไตล์หลัก ดีไซน์โทเค็น ธีมสี และ Responsive CSS
+│   ├── layout.tsx          # Root Layout & Metadata ภาษาไทย
+│   └── page.tsx            # หน้าแดชบอร์ดหลัก ตาราง บัตรข้อมูล และแบบฟอร์ม
+├── db/
+│   ├── index.ts            # การเชื่อมต่อฐานข้อมูล D1
+│   └── schema.ts           # โครงสร้างตาราง reports, surveys, attachments
+├── drizzle/                # SQL Migrations สำหรับ Drizzle
+├── lib/
+│   ├── flu.ts              # ค่าคงที่ 18 โรงพยาบาล, กลุ่มบุคลากร 2569/2570, Types
+│   ├── google-drive.ts     # ระบบตรวจสอบและบันทึกไฟล์ลง Google Drive
+│   └── server-flu.ts       # Server helper functions
+└── package.json
+```
+
+---
+
+## 📄 ลิขสิทธิ์และการติดต่อ (License & Contact)
+
+พัฒนาสำหรับ **กลุ่มงานควบคุมโรคติดต่อ สำนักงานสาธารณสุขจังหวัดกาฬสินธุ์**  
+ผู้ดูแลระบบ: นายชนะชัย มาตย์คำมี (โทร. 091-747-4080)

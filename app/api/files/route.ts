@@ -3,16 +3,24 @@ import { env } from "cloudflare:workers";
 import { getChatGPTUser } from "@/app/chatgpt-auth";
 import { attachments } from "@/db/schema";
 import { db, errorResponse, parseHospital, parseYear } from "@/lib/server-flu";
+import { isGoogleDriveAvailable, saveToGoogleDrive, GOOGLE_DRIVE_BASE_DIR } from "@/lib/google-drive";
 
 const maxSize = 10 * 1024 * 1024;
 const allowedTypes: Record<string, string> = {
-  jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp",
-  pdf: "application/pdf", xls: "application/vnd.ms-excel",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  pdf: "application/pdf",
+  xls: "application/vnd.ms-excel",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   csv: "text/csv",
 };
 
-function extension(name: string) { return name.split(".").pop()?.toLowerCase() ?? ""; }
+function extension(name: string) {
+  return name.split(".").pop()?.toLowerCase() ?? "";
+}
+
 function validSignature(bytes: Uint8Array, ext: string) {
   if (ext === "pdf") return String.fromCharCode(...bytes.slice(0, 5)) === "%PDF-";
   if (ext === "png") return bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
@@ -31,12 +39,31 @@ export async function GET(request: Request) {
   const year = parseYear(url.searchParams.get("year"));
   if (!hospitalId || year === null) return Response.json({ error: "ข้อมูลไม่ถูกต้อง" }, { status: 400 });
   try {
-    const files = await db().select({
-      id: attachments.id, name: attachments.name, type: attachments.type,
-      size: attachments.size, createdAt: attachments.createdAt,
-    }).from(attachments).where(and(eq(attachments.hospitalId, hospitalId), eq(attachments.year, year))).orderBy(desc(attachments.createdAt));
-    return Response.json({ files }, { headers: { "Cache-Control": "no-store" } });
-  } catch (error) { return errorResponse(error); }
+    const files = await db()
+      .select({
+        id: attachments.id,
+        name: attachments.name,
+        type: attachments.type,
+        size: attachments.size,
+        createdAt: attachments.createdAt,
+      })
+      .from(attachments)
+      .where(and(eq(attachments.hospitalId, hospitalId), eq(attachments.year, year)))
+      .orderBy(desc(attachments.createdAt));
+
+    return Response.json(
+      {
+        files,
+        googleDrive: {
+          available: isGoogleDriveAvailable(),
+          folder: GOOGLE_DRIVE_BASE_DIR,
+        },
+      },
+      { headers: { "Cache-Control": "no-store" } }
+    );
+  } catch (error) {
+    return errorResponse(error);
+  }
 }
 
 export async function POST(request: Request) {
@@ -44,33 +71,84 @@ export async function POST(request: Request) {
   if (!user) return Response.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 });
   const contentLength = Number(request.headers.get("content-length") ?? 0);
   if (contentLength > maxSize + 100_000) return Response.json({ error: "ไฟล์มีขนาดเกิน 10 MB" }, { status: 413 });
+
   let form: FormData;
-  try { form = await request.formData(); }
-  catch { return Response.json({ error: "อ่านไฟล์ไม่สำเร็จ" }, { status: 400 }); }
+  try {
+    form = await request.formData();
+  } catch {
+    return Response.json({ error: "อ่านไฟล์ไม่สำเร็จ" }, { status: 400 });
+  }
+
   const hospitalId = parseHospital(form.get("hospitalId"));
   const year = parseYear(form.get("year"));
   const file = form.get("file");
-  if (!hospitalId || year === null || !(file instanceof File)) return Response.json({ error: "ข้อมูลไฟล์ไม่ถูกต้อง" }, { status: 400 });
+  if (!hospitalId || year === null || !(file instanceof File)) {
+    return Response.json({ error: "ข้อมูลไฟล์ไม่ถูกต้อง" }, { status: 400 });
+  }
+
   const name = file.name.replace(/[/\\\u0000-\u001f\u007f]/g, "_").slice(0, 180);
   const ext = extension(name);
-  if (!allowedTypes[ext]) return Response.json({ error: "รองรับเฉพาะรูปภาพ PDF Excel หรือ CSV" }, { status: 400 });
-  if (file.size === 0 || file.size > maxSize) return Response.json({ error: "ไฟล์ต้องมีขนาดไม่เกิน 10 MB" }, { status: 413 });
+  if (!allowedTypes[ext]) {
+    return Response.json({ error: "รองรับเฉพาะรูปภาพ PDF Excel หรือ CSV" }, { status: 400 });
+  }
+  if (file.size === 0 || file.size > maxSize) {
+    return Response.json({ error: "ไฟล์ต้องมีขนาดไม่เกิน 10 MB" }, { status: 413 });
+  }
+
   const bytes = new Uint8Array(await file.arrayBuffer());
-  if (!validSignature(bytes, ext)) return Response.json({ error: "ชนิดไฟล์ไม่ตรงกับนามสกุล" }, { status: 400 });
-  if (!env.BUCKET) return Response.json({ error: "ที่เก็บไฟล์ยังไม่พร้อมใช้งาน" }, { status: 503 });
+  if (!validSignature(bytes, ext)) {
+    return Response.json({ error: "ชนิดไฟล์ไม่ตรงกับนามสกุล" }, { status: 400 });
+  }
+  if (!env.BUCKET) {
+    return Response.json({ error: "ที่เก็บไฟล์ยังไม่พร้อมใช้งาน" }, { status: 503 });
+  }
+
   const id = crypto.randomUUID();
   const objectKey = "flu/" + year + "/" + hospitalId + "/" + id;
+
   try {
+    // 1. Upload to Cloudflare R2 bucket
     await env.BUCKET.put(objectKey, bytes, { httpMetadata: { contentType: allowedTypes[ext] } });
+
+    // 2. Insert record into database
     try {
       await db().insert(attachments).values({
-        id, hospitalId, year, objectKey, name, type: allowedTypes[ext],
-        size: file.size, createdAt: new Date().toISOString(), uploadedBy: user.email,
+        id,
+        hospitalId,
+        year,
+        objectKey,
+        name,
+        type: allowedTypes[ext],
+        size: file.size,
+        createdAt: new Date().toISOString(),
+        uploadedBy: user.email,
       });
     } catch (error) {
       await env.BUCKET.delete(objectKey);
       throw error;
     }
-    return Response.json({ file: { id, name, size: file.size } }, { status: 201 });
-  } catch (error) { return errorResponse(error); }
+
+    // 3. Auto-sync file directly to Google Drive folder: G:\My Drive\วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ
+    const driveResult = await saveToGoogleDrive({
+      hospitalId,
+      year,
+      fileName: name,
+      bytes,
+    });
+
+    return Response.json(
+      {
+        file: {
+          id,
+          name,
+          size: file.size,
+          driveSaved: driveResult.success,
+          drivePath: driveResult.drivePath,
+        },
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    return errorResponse(error);
+  }
 }

@@ -1,5 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#073b40",
+};
 
 export const metadata: Metadata = {
   title: "ระบบรายงานวัคซีนไข้หวัดใหญ่บุคลากร | จังหวัดกาฬสินธุ์",

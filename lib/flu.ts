@@ -34,7 +34,10 @@ export const categories = [
   { key: "fieldOther", label: "อื่น ๆ (นอกกลุ่มเสี่ยง)", group: "กลุ่มงานเสี่ยงในสำนักงานสาธารณสุขอำเภอ" },
 ] as const;
 
-export type CategoryKey = (typeof categories)[number]["key"];
+export type Category = (typeof categories)[number];
+export type CategoryKey = Category["key"];
+export const categories2569 = categories;
+export const categories2570: readonly Category[] = categories.filter((c) => c.key !== "medicalOther");
 export type Counts = Record<CategoryKey, number>;
 export type Report = {
   hospitalId: string;
@@ -54,6 +57,21 @@ export type Attachment = {
   createdAt: string;
 };
 
+export type Survey = {
+  hospitalId: string;
+  year: number;
+  targetTotal: number;
+  requestedDoses: number;
+  counts: Counts;
+  coordinatorName: string;
+  coordinatorPhone: string;
+  coordinatorPosition: string;
+  notes: string;
+  updatedAt: string;
+  updatedBy: string;
+  attachmentCount: number;
+};
+
 export function emptyCounts(): Counts {
   return Object.fromEntries(categories.map((category) => [category.key, 0])) as Counts;
 }
@@ -62,6 +80,11 @@ export function sumCounts(counts: Counts): number {
   return categories.reduce((sum, category) => sum + (counts[category.key] || 0), 0);
 }
 
+export function sumCounts2570(counts: Counts): number {
+  return categories2570.reduce((sum, category) => sum + (counts[category.key] || 0), 0);
+}
+
 export function isValidHospital(value: string): boolean {
   return hospitals.some((hospital) => hospital.id === value);
 }
+

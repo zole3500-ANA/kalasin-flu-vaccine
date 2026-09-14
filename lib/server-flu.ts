@@ -1,6 +1,6 @@
 import { getDb } from "@/db";
 import { categories, emptyCounts, isValidHospital, sumCounts } from "@/lib/flu";
-import type { Counts } from "@/lib/flu";
+import type { Counts, Survey } from "@/lib/flu";
 
 export function db() { return getDb(); }
 
@@ -19,6 +19,10 @@ export function parseCounts(value: unknown): Counts | null {
   const result = emptyCounts();
   for (const category of categories) {
     const n = record[category.key];
+    if (n === undefined || n === null || n === "") {
+      result[category.key] = 0;
+      continue;
+    }
     if (typeof n !== "number" || !Number.isInteger(n) || n < 0 || n > 10_000_000) return null;
     result[category.key] = n;
   }
@@ -41,7 +45,41 @@ export function toReport(row: { hospitalId: string; year: number; allocated: num
   };
 }
 
+export function toSurvey(
+  row: {
+    hospitalId: string;
+    year: number;
+    targetTotal: number;
+    requestedDoses: number;
+    countsJson: string;
+    coordinatorName: string;
+    coordinatorPhone: string;
+    coordinatorPosition: string;
+    notes: string;
+    updatedAt: string;
+    updatedBy: string;
+  },
+  attachmentCount: number
+): Survey {
+  const counts = readCounts(row.countsJson);
+  return {
+    hospitalId: row.hospitalId,
+    year: row.year,
+    targetTotal: row.targetTotal,
+    requestedDoses: row.requestedDoses,
+    counts,
+    coordinatorName: row.coordinatorName,
+    coordinatorPhone: row.coordinatorPhone,
+    coordinatorPosition: row.coordinatorPosition,
+    notes: row.notes,
+    updatedAt: row.updatedAt,
+    updatedBy: row.updatedBy,
+    attachmentCount,
+  };
+}
+
 export function errorResponse(error: unknown) {
   console.error(error);
   return Response.json({ error: "ไม่สามารถเข้าถึงข้อมูลได้ กรุณาลองอีกครั้ง" }, { status: 500 });
 }
+
