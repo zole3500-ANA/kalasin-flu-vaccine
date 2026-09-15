@@ -138,26 +138,69 @@
     <!-- LEFT SIDEBAR -->
     <aside class="w-full md:w-72 shrink-0 flex flex-col gap-5">
       
-      <!-- MODE NAVIGATION -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-1 font-heading">
-          เลือกเมนูระบบ
+      <!-- MODE NAVIGATION (PROMINENT HIGHLIGHTED) -->
+      <div class="bg-gradient-to-b from-white to-slate-50/80 rounded-2xl p-4 shadow-sm border-2 border-teal-200/90 ring-2 ring-teal-500/10">
+        <div class="flex items-center justify-between mb-3 px-0.5">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse"></span>
+            <span class="text-xs font-bold text-slate-800 tracking-wide font-heading">
+              เลือกเมนูระบบ / ปีงบประมาณ
+            </span>
+          </div>
+          <span class="text-[10px] bg-teal-100/70 text-teal-800 font-bold px-2 py-0.5 rounded-full">คลิกเพื่อสลับ</span>
         </div>
-        <nav class="flex flex-col gap-1.5" id="nav-tabs">
-          <button onclick="setMode('2569')" id="tab-btn-2569" class="w-full text-left px-3.5 py-3 rounded-xl flex items-center justify-between font-medium text-sm transition-all duration-150 bg-teal-50 text-teal-900 border border-teal-200 shadow-sm">
-            <div class="flex items-center space-x-3">
-              <i data-lucide="activity" class="w-4 h-4 text-teal-600"></i>
-              <span>1. รายงานผลการฉีด 2569</span>
+        
+        <nav class="flex flex-col gap-3" id="nav-tabs">
+          <!-- 2569 BUTTON -->
+          <button 
+            type="button"
+            onclick="setMode('2569')" 
+            id="tab-btn-2569" 
+            class="w-full text-left p-3.5 rounded-xl flex flex-col gap-2 transition-all duration-200 cursor-pointer group shadow-xs"
+          >
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center space-x-2">
+                <div id="tab-icon-box-2569" class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors">
+                  <i data-lucide="activity" class="w-4 h-4"></i>
+                </div>
+                <span id="tab-badge-top-2569" class="text-[10px] font-bold px-2 py-0.5 rounded-md">ปีงบ 2569</span>
+              </div>
+              <span id="tab-count-2569" class="text-xs font-black px-2.5 py-0.5 rounded-full">0/19</span>
             </div>
-            <span id="tab-count-2569" class="text-xs bg-teal-200/80 text-teal-900 font-bold px-2 py-0.5 rounded-full">0/19</span>
+            <div>
+              <div id="tab-title-2569" class="font-bold text-sm leading-snug">
+                1. รายงานผลการฉีด 2569
+              </div>
+              <div id="tab-sub-2569" class="text-[11px] mt-0.5 leading-snug">
+                บันทึกผลฉีดจริง 12 กลุ่ม + แนบไฟล์
+              </div>
+            </div>
           </button>
 
-          <button onclick="setMode('2570')" id="tab-btn-2570" class="w-full text-left px-3.5 py-3 rounded-xl flex items-center justify-between font-medium text-sm transition-all duration-150 text-slate-600 hover:bg-slate-50 border border-transparent">
-            <div class="flex items-center space-x-3">
-              <i data-lucide="calendar-range" class="w-4 h-4 text-slate-400"></i>
-              <span>2. สำรวจความต้องการ 2570</span>
+          <!-- 2570 BUTTON -->
+          <button 
+            type="button"
+            onclick="setMode('2570')" 
+            id="tab-btn-2570" 
+            class="w-full text-left p-3.5 rounded-xl flex flex-col gap-2 transition-all duration-200 cursor-pointer group shadow-xs"
+          >
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center space-x-2">
+                <div id="tab-icon-box-2570" class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors">
+                  <i data-lucide="calendar-range" class="w-4 h-4"></i>
+                </div>
+                <span id="tab-badge-top-2570" class="text-[10px] font-bold px-2 py-0.5 rounded-md">ปีงบ 2570</span>
+              </div>
+              <span id="tab-count-2570" class="text-xs font-black px-2.5 py-0.5 rounded-full">0/19</span>
             </div>
-            <span id="tab-count-2570" class="text-xs bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded-full">0/19</span>
+            <div>
+              <div id="tab-title-2570" class="font-bold text-sm leading-snug">
+                2. สำรวจความต้องการ 2570
+              </div>
+              <div id="tab-sub-2570" class="text-[11px] mt-0.5 leading-snug">
+                สำรวจยอดขอรับจัดสรรวัคซีนล่วงหน้า
+              </div>
+            </div>
           </button>
         </nav>
       </div>
@@ -229,6 +272,41 @@
 
     <!-- RIGHT MAIN CONTENT -->
     <main class="flex-1 flex flex-col gap-6">
+
+      <!-- TOP DUAL-YEAR TOGGLE BANNER (HIGH VISIBILITY FOR ALL DEVICES) -->
+      <div class="bg-gradient-to-r from-teal-900 via-slate-900 to-sky-950 p-2.5 sm:p-3 rounded-2xl shadow-md border border-slate-700 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+        <div class="px-2 text-slate-200 text-xs font-bold flex items-center space-x-2 shrink-0">
+          <i data-lucide="arrow-left-right" class="w-4 h-4 text-teal-400"></i>
+          <span>เลือกปีที่ต้องการ:</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1">
+          <button 
+            type="button" 
+            onclick="setMode('2569')" 
+            id="top-toggle-2569" 
+            class="py-2.5 px-3.5 rounded-xl flex items-center justify-between text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer shadow-xs"
+          >
+            <div class="flex items-center space-x-2 truncate">
+              <i data-lucide="activity" class="w-4 h-4 shrink-0"></i>
+              <span class="truncate">1. รายงานผลการฉีด 2569</span>
+            </div>
+            <span id="top-count-2569" class="text-[11px] font-black px-2 py-0.5 rounded-md shrink-0 ml-2">0/19</span>
+          </button>
+
+          <button 
+            type="button" 
+            onclick="setMode('2570')" 
+            id="top-toggle-2570" 
+            class="py-2.5 px-3.5 rounded-xl flex items-center justify-between text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer shadow-xs"
+          >
+            <div class="flex items-center space-x-2 truncate">
+              <i data-lucide="calendar-range" class="w-4 h-4 shrink-0"></i>
+              <span class="truncate">2. สำรวจความต้องการ 2570</span>
+            </div>
+            <span id="top-count-2570" class="text-[11px] font-black px-2 py-0.5 rounded-md shrink-0 ml-2">0/19</span>
+          </button>
+        </div>
+      </div>
 
       <!-- HEADER BANNER & STATS -->
       <div id="mode-header-card" class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 transition-all duration-200">
@@ -928,18 +1006,54 @@
       // Update Tab Styles
       const btn69 = document.getElementById("tab-btn-2569");
       const btn70 = document.getElementById("tab-btn-2570");
+      const iconBox69 = document.getElementById("tab-icon-box-2569");
+      const iconBox70 = document.getElementById("tab-icon-box-2570");
+      const badgeTop69 = document.getElementById("tab-badge-top-2569");
+      const badgeTop70 = document.getElementById("tab-badge-top-2570");
+      const title69 = document.getElementById("tab-title-2569");
+      const title70 = document.getElementById("tab-title-2570");
+      const sub69 = document.getElementById("tab-sub-2569");
+      const sub70 = document.getElementById("tab-sub-2570");
+      const count69 = document.getElementById("tab-count-2569");
+      const count70 = document.getElementById("tab-count-2570");
+
+      const topToggle69 = document.getElementById("top-toggle-2569");
+      const topToggle70 = document.getElementById("top-toggle-2570");
+      const topCount69 = document.getElementById("top-count-2569");
+      const topCount70 = document.getElementById("top-count-2570");
+
       const mobBtn69 = document.getElementById("mobile-btn-2569");
       const mobBtn70 = document.getElementById("mobile-btn-2570");
       const badge = document.getElementById("brand-badge");
-      const headerCard = document.getElementById("mode-header-card");
       const compCard = document.getElementById("comparison-card-container");
 
       if (mode === "2569") {
-        btn69.className = "w-full text-left px-3.5 py-3 rounded-xl flex items-center justify-between font-medium text-sm transition-all duration-150 bg-teal-50 text-teal-900 border border-teal-200 shadow-sm";
-        btn70.className = "w-full text-left px-3.5 py-3 rounded-xl flex items-center justify-between font-medium text-sm transition-all duration-150 text-slate-600 hover:bg-slate-50 border border-transparent";
-        mobBtn69.className = "flex flex-col items-center py-1 px-3 text-xs font-semibold text-teal-700";
-        mobBtn70.className = "flex flex-col items-center py-1 px-3 text-xs font-medium text-slate-400";
-        badge.className = "w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-md shadow-teal-700/20 transition-colors duration-200";
+        // Sidebar 2569 Active
+        if (btn69) btn69.className = "w-full text-left p-3.5 rounded-xl flex flex-col gap-2 transition-all duration-200 cursor-pointer bg-gradient-to-r from-teal-700 to-teal-800 text-white shadow-md shadow-teal-900/20 ring-2 ring-teal-500 border border-teal-600";
+        if (iconBox69) iconBox69.className = "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-teal-600/80 text-teal-100 shadow-xs";
+        if (badgeTop69) badgeTop69.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-900/60 text-teal-200 border border-teal-500/30";
+        if (title69) title69.className = "font-bold text-sm leading-snug text-white";
+        if (sub69) sub69.className = "text-[11px] mt-0.5 leading-snug text-teal-200 font-normal";
+        if (count69) count69.className = "text-xs font-black px-2.5 py-0.5 rounded-full bg-white text-teal-900 shadow-xs";
+
+        // Sidebar 2570 Inactive
+        if (btn70) btn70.className = "w-full text-left p-3.5 rounded-xl flex flex-col gap-2 transition-all duration-200 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 hover:border-sky-300 shadow-2xs group";
+        if (iconBox70) iconBox70.className = "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 text-slate-500 group-hover:bg-sky-50 group-hover:text-sky-600";
+        if (badgeTop70) badgeTop70.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600";
+        if (title70) title70.className = "font-bold text-sm leading-snug text-slate-800 group-hover:text-sky-700";
+        if (sub70) sub70.className = "text-[11px] mt-0.5 leading-snug text-slate-400 font-normal";
+        if (count70) count70.className = "text-xs font-black px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200";
+
+        // Top Main Toggle
+        if (topToggle69) topToggle69.className = "py-2.5 px-3.5 rounded-xl flex items-center justify-between text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-teal-600 text-white shadow-md ring-2 ring-teal-400";
+        if (topCount69) topCount69.className = "text-[11px] font-black px-2 py-0.5 rounded-md bg-teal-900/70 text-teal-100";
+        if (topToggle70) topToggle70.className = "py-2.5 px-3.5 rounded-xl flex items-center justify-between text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700";
+        if (topCount70) topCount70.className = "text-[11px] font-black px-2 py-0.5 rounded-md bg-slate-700 text-slate-300";
+
+        // Mobile Bottom Bar
+        if (mobBtn69) mobBtn69.className = "flex flex-col items-center py-1 px-3 text-xs font-bold text-teal-700";
+        if (mobBtn70) mobBtn70.className = "flex flex-col items-center py-1 px-3 text-xs font-medium text-slate-400";
+        if (badge) badge.className = "w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-md shadow-teal-700/20 transition-colors duration-200";
         
         document.getElementById("mode-badge-label").className = "inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200 mb-2";
         document.getElementById("mode-badge-text").innerText = "ปีงบประมาณ 2569";
@@ -950,11 +1064,32 @@
         
         compCard.classList.add("hidden");
       } else {
-        btn69.className = "w-full text-left px-3.5 py-3 rounded-xl flex items-center justify-between font-medium text-sm transition-all duration-150 text-slate-600 hover:bg-slate-50 border border-transparent";
-        btn70.className = "w-full text-left px-3.5 py-3 rounded-xl flex items-center justify-between font-medium text-sm transition-all duration-150 bg-sky-50 text-sky-900 border border-sky-200 shadow-sm";
-        mobBtn69.className = "flex flex-col items-center py-1 px-3 text-xs font-medium text-slate-400";
-        mobBtn70.className = "flex flex-col items-center py-1 px-3 text-xs font-semibold text-sky-700";
-        badge.className = "w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-700/20 transition-colors duration-200";
+        // Sidebar 2569 Inactive
+        if (btn69) btn69.className = "w-full text-left p-3.5 rounded-xl flex flex-col gap-2 transition-all duration-200 cursor-pointer bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 hover:border-teal-300 shadow-2xs group";
+        if (iconBox69) iconBox69.className = "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 text-slate-500 group-hover:bg-teal-50 group-hover:text-teal-600";
+        if (badgeTop69) badgeTop69.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600";
+        if (title69) title69.className = "font-bold text-sm leading-snug text-slate-800 group-hover:text-teal-700";
+        if (sub69) sub69.className = "text-[11px] mt-0.5 leading-snug text-slate-400 font-normal";
+        if (count69) count69.className = "text-xs font-black px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200";
+
+        // Sidebar 2570 Active
+        if (btn70) btn70.className = "w-full text-left p-3.5 rounded-xl flex flex-col gap-2 transition-all duration-200 cursor-pointer bg-gradient-to-r from-sky-700 to-sky-800 text-white shadow-md shadow-sky-900/20 ring-2 ring-sky-500 border border-sky-600";
+        if (iconBox70) iconBox70.className = "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-sky-600/80 text-sky-100 shadow-xs";
+        if (badgeTop70) badgeTop70.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-900/60 text-sky-200 border border-sky-500/30";
+        if (title70) title70.className = "font-bold text-sm leading-snug text-white";
+        if (sub70) sub70.className = "text-[11px] mt-0.5 leading-snug text-sky-200 font-normal";
+        if (count70) count70.className = "text-xs font-black px-2.5 py-0.5 rounded-full bg-white text-sky-900 shadow-xs";
+
+        // Top Main Toggle
+        if (topToggle69) topToggle69.className = "py-2.5 px-3.5 rounded-xl flex items-center justify-between text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700";
+        if (topCount69) topCount69.className = "text-[11px] font-black px-2 py-0.5 rounded-md bg-slate-700 text-slate-300";
+        if (topToggle70) topToggle70.className = "py-2.5 px-3.5 rounded-xl flex items-center justify-between text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer bg-sky-600 text-white shadow-md ring-2 ring-sky-400";
+        if (topCount70) topCount70.className = "text-[11px] font-black px-2 py-0.5 rounded-md bg-sky-900/70 text-sky-100";
+
+        // Mobile Bottom Bar
+        if (mobBtn69) mobBtn69.className = "flex flex-col items-center py-1 px-3 text-xs font-medium text-slate-400";
+        if (mobBtn70) mobBtn70.className = "flex flex-col items-center py-1 px-3 text-xs font-bold text-sky-700";
+        if (badge) badge.className = "w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-700/20 transition-colors duration-200";
         
         document.getElementById("mode-badge-label").className = "inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200 mb-2";
         document.getElementById("mode-badge-text").innerText = "ปีงบประมาณ 2570";
@@ -1010,10 +1145,20 @@
       const totalReq70 = Object.values(surveys).reduce((s, u) => s + (u.requestedDoses || 0), 0);
 
       // Update Tab Counter Badges
-      document.getElementById("tab-count-2569").innerText = `${reportedCount69}/${hospitals.length}`;
-      document.getElementById("tab-count-2570").innerText = `${surveyedCount70}/${hospitals.length}`;
-      document.getElementById("mobile-count-2569").innerText = `${reportedCount69}/${hospitals.length}`;
-      document.getElementById("mobile-count-2570").innerText = `${surveyedCount70}/${hospitals.length}`;
+      const count69Text = `${reportedCount69}/${hospitals.length}`;
+      const count70Text = `${surveyedCount70}/${hospitals.length}`;
+      const elTab69 = document.getElementById("tab-count-2569");
+      const elTab70 = document.getElementById("tab-count-2570");
+      const elTop69 = document.getElementById("top-count-2569");
+      const elTop70 = document.getElementById("top-count-2570");
+      const elMob69 = document.getElementById("mobile-count-2569");
+      const elMob70 = document.getElementById("mobile-count-2570");
+      if (elTab69) elTab69.innerText = count69Text;
+      if (elTab70) elTab70.innerText = count70Text;
+      if (elTop69) elTop69.innerText = count69Text;
+      if (elTop70) elTop70.innerText = count70Text;
+      if (elMob69) elMob69.innerText = count69Text;
+      if (elMob70) elMob70.innerText = count70Text;
 
       const grid = document.getElementById("stats-grid");
 
