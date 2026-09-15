@@ -1034,6 +1034,18 @@
     const KEY_REPORTS = "kalasin_flu_reports_2569";
     const KEY_SURVEYS = "kalasin_flu_surveys_2570";
     const KEY_FILES = "kalasin_flu_files_2569";
+    const KEY_DELETED_FILES = "kalasin_flu_deleted_files_2569";
+
+    function loadDeletedFiles() {
+      try {
+        return JSON.parse(localStorage.getItem(KEY_DELETED_FILES)) || {};
+      } catch {
+        return {};
+      }
+    }
+    function saveDeletedFiles(data) {
+      localStorage.setItem(KEY_DELETED_FILES, JSON.stringify(data));
+    }
 
     // Load Data from LocalStorage
     function loadReports() {
@@ -1118,15 +1130,19 @@
           // 2. Merge files 2569
           if (data.files2569 && typeof data.files2569 === "object") {
             const curFiles = loadFiles();
+            const deletedMap = loadDeletedFiles();
             Object.keys(data.files2569).forEach(hid => {
-              // Merge: เฉพาะเพิ่มไฟล์ใหม่ที่ยังไม่มีในเครื่อง ไม่เขียนทับไฟล์ที่ผู้ใช้ลบไปแล้ว
               const localFiles = curFiles[hid] || [];
               const cloudFiles = data.files2569[hid] || [];
+              const deletedForHid = deletedMap[hid] || [];
+
               cloudFiles.forEach(cf => {
+                // ข้ามไฟล์ที่ผู้ใช้เคยกดลบไปแล้วอย่างถาวร
+                if (deletedForHid.includes(cf.driveUrl)) return;
                 const exists = localFiles.some(lf => lf.driveUrl === cf.driveUrl);
                 if (!exists) localFiles.push(cf);
               });
-              curFiles[hid] = localFiles;
+              curFiles[hid] = localFiles.filter(lf => !deletedForHid.includes(lf.driveUrl));
             });
             saveFiles(curFiles);
           }
@@ -1626,6 +1642,7 @@
     // 6. MODAL SHEET / FORM OPERATIONS
     // ==========================================
     function openFormModal(hospitalId) {
+      pendingDeletedDriveUrls = [];
       editingHospitalId = hospitalId;
       const hosp = hospitals.find(h => h.id === hospitalId);
       if (!hosp) return;
@@ -1875,7 +1892,13 @@
       });
     }
 
+    let pendingDeletedDriveUrls = [];
+
     function removeTempFile(idx) {
+      const removed = tempFiles[idx];
+      if (removed && removed.driveUrl) {
+        pendingDeletedDriveUrls.push(removed.driveUrl);
+      }
       tempFiles.splice(idx, 1);
       renderFileList();
     }
@@ -2089,6 +2112,19 @@
         const files = loadFiles();
         files[editingHospitalId] = cleanFiles;
         saveFiles(files);
+
+        // บันทึกรายการไฟล์ที่ผู้ใช้ลบลง Blacklist เพื่อไม่ให้ Cloud Sync ดึงกลับมา
+        if (pendingDeletedDriveUrls.length > 0) {
+          const deletedMap = loadDeletedFiles();
+          if (!deletedMap[editingHospitalId]) deletedMap[editingHospitalId] = [];
+          pendingDeletedDriveUrls.forEach(url => {
+            if (!deletedMap[editingHospitalId].includes(url)) {
+              deletedMap[editingHospitalId].push(url);
+            }
+          });
+          saveDeletedFiles(deletedMap);
+          pendingDeletedDriveUrls = [];
+        }
 
         closeFormModal();
         renderAll();
