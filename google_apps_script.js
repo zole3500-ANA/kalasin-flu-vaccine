@@ -25,16 +25,17 @@ function doPost(e) {
     var hospitalName = payload.hospitalName || payload.hospitalId || "ไม่ระบุหน่วยบริการ";
     var district = payload.district || "";
 
-    // 1. โฟลเดอร์หลักใน Google Drive
-    var rootFolderName = "วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ";
-    var rootFolder = getOrCreateFolder(DriveApp.getRootFolder(), rootFolderName);
+    // 1. โฟลเดอร์เป้าหมายของ สสจ.กาฬสินธุ์
+    var folderId = "1nnCxIy97p33HCx3KGrxj8a90RZOBmwjw";
+    var rootFolder;
+    try {
+      rootFolder = DriveApp.getFolderById(folderId);
+    } catch (e) {
+      rootFolder = getOrCreateFolder(DriveApp.getRootFolder(), "วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ");
+    }
 
-    // 2. โฟลเดอร์แยกตามปีงบประมาณ
-    var yearFolderName = "ปี_" + year + "_รายงานผลการฉีด";
-    var yearFolder = getOrCreateFolder(rootFolder, yearFolderName);
-
-    // 3. โฟลเดอร์แยกรายโรงพยาบาล
-    var hospFolder = getOrCreateFolder(yearFolder, hospitalName);
+    // 2. โฟลเดอร์แยกตามหน่วยบริการ
+    var hospFolder = getOrCreateFolder(rootFolder, hospitalName);
 
     var fileUrl = "";
     var fileId = "";

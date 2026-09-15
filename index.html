@@ -1306,7 +1306,12 @@
         headerBg.className = "p-4 sm:p-5 border-b border-teal-700 bg-teal-700 text-white flex items-center justify-between shrink-0";
         subTitle.innerText = "แบบบันทึกผลการฉีดวัคซีนไข้หวัดใหญ่ · ปีงบประมาณ 2569";
         btnSave.className = "px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center space-x-1.5 transition-colors";
-        btnSaveText.innerText = "บันทึกผลการฉีด 2569";
+        if (btnSaveText) {
+          btnSaveText.innerText = "บันทึกผลการฉีด 2569";
+        } else if (btnSave) {
+          btnSave.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span id="btn-modal-save-text">บันทึกผลการฉีด 2569</span>`;
+        }
+        if (btnSave) btnSave.disabled = false;
         document.getElementById("modal-sum-label").innerText = "ยอดผู้ได้รับวัคซีนรวม";
         document.getElementById("modal-sum-unit").innerText = "ราย";
 
@@ -1323,7 +1328,12 @@
         headerBg.className = "p-4 sm:p-5 border-b border-sky-700 bg-sky-700 text-white flex items-center justify-between shrink-0";
         subTitle.innerText = "แบบสำรวจความต้องการรับการจัดสรรวัคซีน · ปีงบประมาณ 2570 (ไม่ต้องแนบรายชื่อ)";
         btnSave.className = "px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center space-x-1.5 transition-colors";
-        btnSaveText.innerText = "บันทึกแบบสำรวจ 2570";
+        if (btnSaveText) {
+          btnSaveText.innerText = "บันทึกแบบสำรวจ 2570";
+        } else if (btnSave) {
+          btnSave.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span id="btn-modal-save-text">บันทึกแบบสำรวจ 2570</span>`;
+        }
+        if (btnSave) btnSave.disabled = false;
         document.getElementById("modal-sum-label").innerText = "ยอดขอรับจัดสรรวัคซีนรวม";
         document.getElementById("modal-sum-unit").innerText = "โดส";
 
@@ -1350,6 +1360,11 @@
     function closeFormModal() {
       document.getElementById("form-modal").classList.add("hidden");
       editingHospitalId = null;
+      tempFiles = [];
+      const fileInput = document.getElementById("modal-file-input");
+      if (fileInput) fileInput.value = "";
+      const btnSave = document.getElementById("btn-modal-save");
+      if (btnSave) btnSave.disabled = false;
     }
 
     function renderFormInputs(cats, counts) {
@@ -1482,7 +1497,27 @@
       });
 
       const btnSave = document.getElementById("btn-modal-save");
+      let btnSaveText = document.getElementById("btn-modal-save-text");
       const gasUrl = getGasUrl();
+      const defaultSaveLabel = is2569 ? "บันทึกผลการฉีด 2569" : "บันทึกแบบสำรวจ 2570";
+
+      const setSaveLoadingText = (text) => {
+        if (btnSave) btnSave.disabled = true;
+        if (!btnSaveText && btnSave) {
+          btnSave.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span id="btn-modal-save-text">${text}</span>`;
+          btnSaveText = document.getElementById("btn-modal-save-text");
+        } else if (btnSaveText) {
+          btnSaveText.innerText = text;
+        }
+      };
+
+      const restoreSaveButton = () => {
+        if (btnSave) {
+          btnSave.disabled = false;
+          btnSave.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span id="btn-modal-save-text">${defaultSaveLabel}</span>`;
+          if (window.lucide) lucide.createIcons();
+        }
+      };
 
       if (is2569) {
         const alloc = Math.max(0, parseInt(document.getElementById("input-allocated").value, 10) || 0);
@@ -1490,8 +1525,7 @@
 
         // If Google Apps Script is configured, upload to Google Drive
         if (gasUrl) {
-          btnSave.disabled = true;
-          btnSave.innerText = "กำลังส่งข้อมูลและไฟล์เข้า Google Drive...";
+          setSaveLoadingText("กำลังส่งข้อมูลและไฟล์เข้า Google Drive...");
 
           try {
             // Upload files if any
@@ -1499,7 +1533,7 @@
             if (filesToUpload.length > 0) {
               for (let i = 0; i < filesToUpload.length; i++) {
                 const f = filesToUpload[i];
-                btnSave.innerText = `กำลังส่งไฟล์ไปยัง Drive (${i+1}/${filesToUpload.length})...`;
+                setSaveLoadingText(`กำลังส่งไฟล์ไปยัง Drive (${i+1}/${filesToUpload.length})...`);
                 const payload = {
                   hospitalId: editingHospitalId,
                   hospitalName: hosp?.name || editingHospitalId,
@@ -1541,8 +1575,7 @@
           } catch (err) {
             console.error("Google Drive sync error:", err);
           } finally {
-            btnSave.disabled = false;
-            btnSave.innerText = "บันทึกผลการฉีด 2569";
+            restoreSaveButton();
           }
         }
 
