@@ -223,24 +223,7 @@
         </a>
       </div>
 
-      <!-- BACKUP / RESTORE BUTTONS -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-2 text-xs">
-        <div class="font-bold text-slate-700 font-heading">สำรอง / นำเข้าข้อมูล (Local Backup)</div>
-        <div class="flex gap-2">
-          <button onclick="exportDataJSON()" class="flex-1 py-2 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium flex items-center justify-center space-x-1 transition-colors">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span>สำรองข้อมูล</span>
-          </button>
-          <label class="flex-1 py-2 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium flex items-center justify-center space-x-1 transition-colors cursor-pointer text-center">
-            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-            <span>นำเข้า</span>
-            <input type="file" id="import-json-file" accept=".json" class="hidden" onchange="importDataJSON(event)" />
-          </label>
-        </div>
-        <button onclick="resetAllDemoData()" class="text-slate-400 hover:text-red-500 text-[11px] text-center pt-1 transition-colors">
-          ล้างข้อมูลทั้งหมดในเครื่อง (รีเซ็ต)
-        </button>
-      </div>
+
 
     </aside>
 
