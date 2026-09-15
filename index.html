@@ -78,9 +78,22 @@
         padding: 15mm;
         background: white !important;
         color: black !important;
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
       }
       .no-print {
         display: none !important;
+      }
+      #print-modal {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+      }
+      #print-modal > div {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
       }
       @page {
         size: A4 portrait;
@@ -445,7 +458,7 @@
         </div>
 
         <!-- MOBILE CARDS VIEW -->
-        <div class="sm:hidden p-3 flex flex-col gap-3" id="mobile-cards-list">
+        <div class="sm:hidden p-3 pb-24 flex flex-col gap-3" id="mobile-cards-list">
           <!-- Populated by JS -->
         </div>
 
@@ -891,7 +904,7 @@
       const url = getGasUrl();
       document.getElementById("input-gas-url").value = url;
       document.getElementById("drive-modal").classList.remove("hidden");
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeDriveModal() {
@@ -920,14 +933,23 @@
       btn.innerText = "กำลังทดสอบ...";
       btn.disabled = true;
       try {
-        const res = await fetch(url, { method: "GET", mode: "no-cors" });
-        alert("✅ เชื่อมต่อสำเร็จ! URL นี้พร้อมใช้งานรับไฟล์และข้อมูลเข้า Google Drive");
+        const res = await fetch(url, { method: "GET", redirect: "follow" });
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch(e) { data = null; }
+        if (data && data.status === "success") {
+          alert("✅ เชื่อมต่อสำเร็จ! URL นี้พร้อมใช้งาน ดึงข้อมูลได้ถูกต้อง");
+        } else if (res.ok) {
+          alert("⚠️ เชื่อมต่อ URL ได้ แต่ข้อมูลที่ส่งกลับมาไม่ถูกรูปแบบ กรุณาตรวจสอบว่าวาง Code.gs ถูกต้องแล้วกด Deploy ใหม่");
+        } else {
+          alert("⚠️ URL ส่งกลับสถานะ HTTP " + res.status + " กรุณาตรวจสอบอีกครั้ง");
+        }
       } catch (err) {
         alert("⚠️ ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบว่าเลือก Who has access เป็น Anyone แล้วหรือไม่");
       } finally {
         btn.innerHTML = '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i><span>ทดสอบ</span>';
         btn.disabled = false;
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
       }
     }
 
@@ -937,7 +959,7 @@
         btn.innerHTML = '<i data-lucide="check" class="w-3 h-3"></i><span>คัดลอกสำเร็จ!</span>';
         setTimeout(() => {
           btn.innerHTML = '<i data-lucide="copy" class="w-3 h-3"></i><span>คัดลอกโค้ดสคริปต์</span>';
-          lucide.createIcons();
+          if (window.lucide) lucide.createIcons();
         }, 2000);
       }).catch(() => {
         alert("ไม่สามารถคัดลอกอัตโนมัติได้ คุณสามารถเปิดไฟล์ google_apps_script.js ใน GitHub เพื่อคัดลอกได้ครับ");
@@ -1065,7 +1087,14 @@
           if (data.files2569 && typeof data.files2569 === "object") {
             const curFiles = loadFiles();
             Object.keys(data.files2569).forEach(hid => {
-              curFiles[hid] = data.files2569[hid];
+              // Merge: เฉพาะเพิ่มไฟล์ใหม่ที่ยังไม่มีในเครื่อง ไม่เขียนทับไฟล์ที่ผู้ใช้ลบไปแล้ว
+              const localFiles = curFiles[hid] || [];
+              const cloudFiles = data.files2569[hid] || [];
+              cloudFiles.forEach(cf => {
+                const exists = localFiles.some(lf => lf.driveUrl === cf.driveUrl);
+                if (!exists) localFiles.push(cf);
+              });
+              curFiles[hid] = localFiles;
             });
             saveFiles(curFiles);
           }
@@ -1217,7 +1246,7 @@
       }
 
       renderAll();
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function setStatusFilter(filter) {
@@ -1237,7 +1266,9 @@
     }
 
     function handleSearch(val) {
-      searchQuery = (val || "").trim().toLowerCase();
+      searchQuery = (val || "").trim().toLowerCase()
+        .replace(/รพ\.\s*/g, "โรงพยาบาล")
+        .replace(/ปศ\.\s*/g, "ปศุสัตว์");
       renderTableAndCards();
     }
 
@@ -1551,7 +1582,7 @@
         mobileList.appendChild(card);
       });
 
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function renderAll() {
@@ -1637,7 +1668,7 @@
       renderFileList();
       calculateFormSum();
       document.getElementById("form-modal").classList.remove("hidden");
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeFormModal() {
@@ -1948,19 +1979,28 @@
                   year: 2569,
                   fileName: f.name,
                   mimeType: f.type,
-                  base64: f.base64,
-                  reportData: { allocated: alloc, vaccinated: totalDoses, counts: counts }
+                  base64: f.base64
                 };
-                const res = await fetch(gasUrl, {
-                  method: "POST",
-                  headers: { "Content-Type": "text/plain;charset=utf-8" },
-                  body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (data.status === "success") {
-                  f.driveUrl = data.fileUrl;
-                  delete f.base64;
-                  driveUploadSuccess = true;
+                // ส่ง reportData เฉพาะไฟล์แรกเท่านั้น เพื่อไม่ให้ยอดฉีดซ้ำซ้อนใน Google Sheets
+                if (i === 0) {
+                  payload.reportData = { allocated: alloc, vaccinated: totalDoses, counts: counts };
+                }
+                try {
+                  const res = await fetch(gasUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                  });
+                  if (res.ok) {
+                    const data = await res.json();
+                    if (data.status === "success") {
+                      f.driveUrl = data.fileUrl;
+                      delete f.base64;
+                      driveUploadSuccess = true;
+                    }
+                  }
+                } catch (fetchErr) {
+                  console.error("File upload error:", fetchErr);
                 }
               }
             } else {
@@ -1972,12 +2012,17 @@
                 year: 2569,
                 reportData: { allocated: alloc, vaccinated: totalDoses, counts: counts }
               };
-              await fetch(gasUrl, {
+              const nfRes = await fetch(gasUrl, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
               });
-              driveUploadSuccess = true;
+              if (nfRes.ok) {
+                const nfData = await nfRes.json();
+                if (nfData.status === "success") {
+                  driveUploadSuccess = true;
+                }
+              }
             }
           } catch (err) {
             console.error("Google Drive sync error:", err);
@@ -2016,9 +2061,9 @@
         if (driveUploadSuccess) {
           alert("✅ บันทึกข้อมูลและส่งไฟล์เข้า Google Drive สสจ. เรียบร้อยแล้ว!");
         } else if (gasUrl) {
-          alert("✅ บันทึกข้อมูลในเครื่องเรียบร้อยแล้ว (การเชื่อมต่อ Drive มีปัญหาเล็กน้อย แต่ข้อมูลในระบบปลอดภัย)");
+          alert("⚠️ บันทึกข้อมูลในเครื่องของท่านแล้ว แต่ยังส่งไปยัง สสจ. ไม่สำเร็จ\n\nกรุณาตรวจสอบอินเทอร์เน็ตแล้วลองกดบันทึกอีกครั้ง");
         } else {
-          alert("✅ บันทึกข้อมูลในเครื่องเรียบร้อยแล้ว\n\n(คำแนะนำ: สามารถกดปุ่ม 'ตั้งค่า Google Drive (GAS)' ที่แถบด้านซ้าย เพื่อส่งไฟล์เข้า Drive ของ สสจ. อัตโนมัติ)");
+          alert("✅ บันทึกข้อมูลในเครื่องเรียบร้อยแล้ว");
         }
 
         // Trigger background sync
@@ -2051,9 +2096,11 @@
               headers: { "Content-Type": "text/plain;charset=utf-8" },
               body: JSON.stringify(payload)
             });
-            const data = await res.json();
-            if (data.status === "success") {
-              driveSurveySuccess = true;
+            if (res.ok) {
+              const data = await res.json();
+              if (data.status === "success") {
+                driveSurveySuccess = true;
+              }
             }
           } catch (err) {
             console.error("GAS survey sync error:", err);
@@ -2081,8 +2128,10 @@
 
         if (driveSurveySuccess) {
           alert("✅ บันทึกแบบสำรวจปี 2570 และส่งเข้า Google Sheets สสจ. เรียบร้อยแล้ว!");
+        } else if (gasUrl) {
+          alert("⚠️ บันทึกข้อมูลในเครื่องของท่านแล้ว แต่ยังส่งแบบสำรวจไปยัง สสจ. ไม่สำเร็จ\n\nกรุณาตรวจสอบอินเทอร์เน็ตแล้วลองกดบันทึกอีกครั้ง");
         } else {
-          alert("✅ บันทึกแบบสำรวจปี 2570 เรียบร้อยแล้ว!");
+          alert("✅ บันทึกแบบสำรวจปี 2570 ในเครื่องเรียบร้อยแล้ว");
         }
 
         // Trigger background sync to refresh all counts
@@ -2231,7 +2280,7 @@
       }
 
       document.getElementById("print-modal").classList.remove("hidden");
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closePrintModal() {
@@ -2241,6 +2290,11 @@
     // ==========================================
     // 8. CSV EXPORT & BACKUP/RESTORE
     // ==========================================
+    function csvEscape(v) {
+      const s = String(v == null ? "" : v);
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+
     function exportCSV() {
       const is2569 = currentMode === "2569";
       let csv = "\uFEFF"; // UTF-8 BOM
@@ -2253,7 +2307,7 @@
         const headers = ["ลำดับ", "ชื่อโรงพยาบาล", "อำเภอ", "สถานะ", "ยอดจัดสรร (โดส)", "ฉีดจริงรวม (ราย)", "ความครอบคลุม (%)"];
         cats.forEach(c => headers.push(c.label));
         headers.push("อัปเดตล่าสุด");
-        csv += headers.map(h => `"${h}"`).join(",") + "\n";
+        csv += headers.map(h => csvEscape(h)).join(",") + "\n";
 
         // Rows
         hospitals.forEach((h, i) => {
@@ -2268,7 +2322,7 @@
             row.push(r && r.counts ? (r.counts[c.key] || 0) : 0);
           });
           row.push(r ? r.updatedAt : "");
-          csv += row.map(v => `"${v}"`).join(",") + "\n";
+          csv += row.map(v => csvEscape(v)).join(",") + "\n";
         });
 
         downloadBlob(csv, "kalasin-flu-staff-report-2569.csv", "text/csv;charset=utf-8;");
@@ -2280,7 +2334,7 @@
         const headers = ["ลำดับ", "ชื่อโรงพยาบาล", "อำเภอ", "สถานะแบบสำรวจ", "เป้าหมายบุคลากร (ราย)", "ขอรับจัดสรรรวม (โดส)"];
         cats.forEach(c => headers.push(c.label));
         headers.push("ผู้ประสานงาน", "เบอร์โทรศัพท์", "ตำแหน่ง", "หมายเหตุ", "อัปเดตล่าสุด");
-        csv += headers.map(h => `"${h}"`).join(",") + "\n";
+        csv += headers.map(h => csvEscape(h)).join(",") + "\n";
 
         // Rows
         hospitals.forEach((h, i) => {
@@ -2298,7 +2352,7 @@
           row.push(s ? s.coordinatorPosition : "");
           row.push(s ? s.notes : "");
           row.push(s ? s.updatedAt : "");
-          csv += row.map(v => `"${v}"`).join(",") + "\n";
+          csv += row.map(v => csvEscape(v)).join(",") + "\n";
         });
 
         downloadBlob(csv, "kalasin-flu-staff-demand-survey-2570.csv", "text/csv;charset=utf-8;");
