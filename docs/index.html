@@ -114,7 +114,20 @@
       </div>
 
       <!-- Quick Info / Status -->
-      <div class="hidden sm:flex items-center space-x-4">
+      <div class="hidden sm:flex items-center space-x-3">
+        <!-- Live Cloud Sync Button -->
+        <button 
+          type="button" 
+          onclick="syncFromCloud(true)" 
+          id="btn-cloud-sync" 
+          class="flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 transition-colors shadow-2xs cursor-pointer"
+          title="คลิกเพื่อดึงข้อมูลล่าสุดจาก Google Sheets กลางของ สสจ."
+        >
+          <i data-lucide="refresh-cw" id="icon-cloud-sync" class="w-3.5 h-3.5 text-teal-600"></i>
+          <span id="text-cloud-sync">ซิงค์ข้อมูลล่าสุด</span>
+          <span id="badge-sync-time" class="text-[10px] text-teal-600 font-normal"></span>
+        </button>
+
         <a href="https://drive.google.com/drive/folders/1nnCxIy97p33HCx3KGrxj8a90RZOBmwjw" target="_blank" id="top-drive-badge" class="flex items-center space-x-1.5 text-xs text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors shadow-2xs cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span class="font-semibold">Google Drive สสจ.</span>
@@ -393,8 +406,18 @@
             </button>
           </div>
 
-          <!-- Search Input -->
-          <div class="relative w-full sm:w-72">
+          <!-- Search Input & Mobile Sync -->
+          <div class="flex items-center gap-2 w-full sm:w-72">
+            <button 
+              type="button" 
+              onclick="syncFromCloud(true)" 
+              class="sm:hidden px-3 py-2 rounded-xl text-xs font-bold bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 flex items-center space-x-1 shrink-0"
+              title="ดึงข้อมูลล่าสุดจาก Google Sheets"
+            >
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-teal-600"></i>
+              <span>ซิงค์</span>
+            </button>
+            <div class="relative flex-1">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
             <input 
               type="text" 
@@ -403,6 +426,7 @@
               placeholder="ค้นหาโรงพยาบาลหรืออำเภอ..." 
               class="w-full pl-9 pr-4 py-1.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
             />
+            </div>
           </div>
         </div>
 
@@ -857,7 +881,7 @@
     const GOOGLE_DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1nnCxIy97p33HCx3KGrxj8a90RZOBmwjw";
     const KEY_GAS_URL = "kalasin_gas_url";
     const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbwL2rNfswzLwWpbBhnUb5ajyX0pYJf4_cTyf6ag9jr8aSB65r-rIy0TfZYRy1tgkMj4kA/exec";
-    const GAS_SOURCE_CODE = "/**\n * =========================================================================\n * ระบบรับไฟล์และข้อมูลวัคซีนไข้หวัดใหญ่บุคลากร จังหวัดกาฬสินธุ์\n * กลุ่มงานควบคุมโรคติดต่อ สำนักงานสาธารณสุขจังหวัดกาฬสินธุ์\n * =========================================================================\n * \n * ฟังก์ชัน:\n * 1. รับไฟล์หลักฐานรายชื่อ (PDF, Excel, รูปภาพ, CSV) จากหน้าเว็บ\n * 2. สร้างโฟลเดอร์ใน Google Drive อัตโนมัติ:\n *    - วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ/\n *      - ปี_2569_รายงานผลการฉีด/\n *        - โรงพยาบาลกาฬสินธุ์/ (แยกตามชื่อหน่วยบริการ)\n * 3. บันทึกประวัติและยอดตัวเลขลงใน Google Sheets \"สรุปผลรายงานวัคซีน_2569\" อัตโนมัติ\n */\n\nfunction doPost(e) {\n  try {\n    // ตรวจสอบข้อมูลนำเข้า\n    if (!e || !e.postData || !e.postData.contents) {\n      return responseJSON({ status: \"error\", message: \"ไม่มีข้อมูลส่งมา\" });\n    }\n\n    var payload = JSON.parse(e.postData.contents);\n    var year = payload.year || 2569;\n    var hospitalName = payload.hospitalName || payload.hospitalId || \"ไม่ระบุหน่วยบริการ\";\n    var district = payload.district || \"\";\n\n    // 1. โฟลเดอร์เป้าหมายของ สสจ.กาฬสินธุ์\n    var folderId = \"1nnCxIy97p33HCx3KGrxj8a90RZOBmwjw\";\n    var rootFolder;\n    try {\n      rootFolder = DriveApp.getFolderById(folderId);\n    } catch (e) {\n      rootFolder = getOrCreateFolder(DriveApp.getRootFolder(), \"วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ\");\n    }\n\n    // 2. โฟลเดอร์แยกตามหน่วยบริการ\n    var hospFolder = getOrCreateFolder(rootFolder, hospitalName);\n\n    var fileUrl = \"\";\n    var fileId = \"\";\n    var fileName = payload.fileName || \"\";\n\n    // 4. บันทึกไฟล์ถ้ามีการแนบมา\n    if (payload.base64 && payload.fileName) {\n      var contentType = payload.mimeType || \"application/octet-stream\";\n      var fileBytes = Utilities.base64Decode(payload.base64);\n      \n      // ตั้งชื่อไฟล์: วันที่_ชื่อไฟล์เดิม\n      var timePrefix = Utilities.formatDate(new Date(), \"Asia/Bangkok\", \"yyyyMMdd_HHmm\");\n      var safeName = timePrefix + \"_\" + payload.fileName;\n\n      var blob = Utilities.newBlob(fileBytes, contentType, safeName);\n      var newFile = hospFolder.createFile(blob);\n      fileUrl = newFile.getUrl();\n      fileId = newFile.getId();\n    }\n\n    // 5. บันทึกสรุปลง Google Sheet อัตโนมัติ\n    var sheetName = \"สรุปผลรายงานวัคซีน_\" + year;\n    var sheetFile = getOrCreateSpreadsheet(rootFolder, sheetName);\n    var sheet = sheetFile.getActiveSheet();\n\n    var rep = payload.reportData || {};\n    var counts = rep.counts || {};\n    var timestamp = Utilities.formatDate(new Date(), \"Asia/Bangkok\", \"dd/MM/yyyy HH:mm:ss\");\n\n    sheet.appendRow([\n      timestamp,\n      hospitalName,\n      district,\n      rep.allocated || 0,\n      rep.vaccinated || 0,\n      fileName ? fileName : \"ไม่มีไฟล์แนบ\",\n      fileUrl ? fileUrl : \"-\",\n      counts.doctors || 0,\n      counts.pharmacists || 0,\n      counts.nurses || 0,\n      counts.lab || 0,\n      counts.publicHealth || 0,\n      counts.interns || 0,\n      counts.medicalOtherRisk || 0,\n      counts.medicalOther || 0,\n      counts.investigation || 0,\n      counts.livestock || 0,\n      counts.fieldOtherRisk || 0,\n      counts.fieldOther || 0\n    ]);\n\n    return responseJSON({\n      status: \"success\",\n      message: \"บันทึกข้อมูลและไฟล์ลง Google Drive เรียบร้อยแล้ว\",\n      fileUrl: fileUrl,\n      fileId: fileId,\n      folderUrl: hospFolder.getUrl()\n    });\n\n  } catch (err) {\n    return responseJSON({\n      status: \"error\",\n      message: \"เกิดข้อผิดพลาด: \" + err.toString()\n    });\n  }\n}\n\n// ช่วยดึงหรือสร้างโฟลเดอร์\nfunction getOrCreateFolder(parentFolder, folderName) {\n  var folders = parentFolder.getFoldersByName(folderName);\n  if (folders.hasNext()) {\n    return folders.next();\n  }\n  return parentFolder.createFolder(folderName);\n}\n\n// ช่วยดึงหรือสร้าง Google Spreadsheet\nfunction getOrCreateSpreadsheet(folder, sheetName) {\n  var files = folder.getFilesByName(sheetName);\n  if (files.hasNext()) {\n    return SpreadsheetApp.open(files.next());\n  }\n\n  // สร้างไฟล์ใหม่\n  var ss = SpreadsheetApp.create(sheetName);\n  var file = DriveApp.getFileById(ss.getId());\n  folder.addFile(file);\n  DriveApp.getRootFolder().removeFile(file);\n\n  // ใส่หัวตาราง\n  var sheet = ss.getActiveSheet();\n  var headers = [\n    \"วันเวลาที่บันทึก\",\n    \"หน่วยบริการ\",\n    \"อำเภอ\",\n    \"ยอดจัดสรร (โดส)\",\n    \"ยอดฉีดจริง (ราย)\",\n    \"ชื่อเอกสารแนบ\",\n    \"ลิงก์ไฟล์ Google Drive\",\n    \"แพทย์\",\n    \"เภสัชกร\",\n    \"พยาบาล\",\n    \"จนท.ห้องปฏิบัติการ\",\n    \"นักวิชาการ/จพ.สาธารณสุข\",\n    \"นักศึกษาฝึกงาน\",\n    \"จนท.กลุ่มเสี่ยงอื่น (รพ.)\",\n    \"อื่น ๆ (นอกกลุ่มเสี่ยง รพ.)\",\n    \"ทีมสอบสวนโรค\",\n    \"ทีมทำลายสัตว์ปีก/ปศุสัตว์\",\n    \"จนท.กลุ่มเสี่ยงอื่น (สสอ.)\",\n    \"อื่น ๆ (นอกกลุ่มเสี่ยง สสอ.)\"\n  ];\n  sheet.appendRow(headers);\n  var headerRange = sheet.getRange(1, 1, 1, headers.length);\n  headerRange.setFontWeight(\"bold\");\n  headerRange.setBackground(\"#0f766e\");\n  headerRange.setFontColor(\"#ffffff\");\n  headerRange.setHorizontalAlignment(\"center\");\n  sheet.setFrozenRows(1);\n\n  return ss;\n}\n\n// ส่งคืน JSON Output\nfunction responseJSON(obj) {\n  return ContentService.createTextOutput(JSON.stringify(obj))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n\n// สำหรับทดสอบการเปิดดู URL ในเบราว์เซอร์\nfunction doGet() {\n  return ContentService.createTextOutput(\"Google Apps Script Webhook สำหรับระบบวัคซีนไข้หวัดใหญ่ จ.กาฬสินธุ์ พร้อมใช้งาน\")\n    .setMimeType(ContentService.MimeType.TEXT);\n}\n";
+    const GAS_SOURCE_CODE = "/**\n * =========================================================================\n * ระบบรับไฟล์และข้อมูลวัคซีนไข้หวัดใหญ่บุคลากร จังหวัดกาฬสินธุ์ (Live Cloud Sync)\n * กลุ่มงานควบคุมโรคติดต่อ สำนักงานสาธารณสุขจังหวัดกาฬสินธุ์\n * =========================================================================\n * \n * ฟังก์ชัน:\n * 1. doPost(e): รับไฟล์และบันทึกยอดฉีด/สำรวจ ลง Google Drive และ Google Sheets\n * 2. doGet(e): ส่งข้อมูลสรุปทั้งหมดจาก Google Sheets กลับไปยังหน้าเว็บ (Live Cloud Sync)\n */\n\nfunction doPost(e) {\n  try {\n    if (!e || !e.postData || !e.postData.contents) {\n      return responseJSON({ status: \"error\", message: \"ไม่มีข้อมูลส่งมา\" });\n    }\n\n    var payload = JSON.parse(e.postData.contents);\n    var year = Number(payload.year) || 2569;\n    var hospitalName = payload.hospitalName || payload.hospitalId || \"ไม่ระบุหน่วยบริการ\";\n    var district = payload.district || \"\";\n\n    // 1. โฟลเดอร์เป้าหมายของ สสจ.กาฬสินธุ์\n    var folderId = \"1nnCxIy97p33HCx3KGrxj8a90RZOBmwjw\";\n    var rootFolder;\n    try {\n      rootFolder = DriveApp.getFolderById(folderId);\n    } catch (e) {\n      rootFolder = getOrCreateFolder(DriveApp.getRootFolder(), \"วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ\");\n    }\n\n    // 2. โฟลเดอร์แยกตามหน่วยบริการ\n    var hospFolder = getOrCreateFolder(rootFolder, hospitalName);\n\n    var fileUrl = \"\";\n    var fileId = \"\";\n    var fileName = payload.fileName || \"\";\n\n    // 3. บันทึกไฟล์ถ้ามีการแนบมา (สำหรับปี 2569)\n    if (payload.base64 && payload.fileName) {\n      var contentType = payload.mimeType || \"application/octet-stream\";\n      var fileBytes = Utilities.base64Decode(payload.base64);\n      \n      var timePrefix = Utilities.formatDate(new Date(), \"Asia/Bangkok\", \"yyyyMMdd_HHmm\");\n      var safeName = timePrefix + \"_\" + payload.fileName;\n\n      var blob = Utilities.newBlob(fileBytes, contentType, safeName);\n      var newFile = hospFolder.createFile(blob);\n      fileUrl = newFile.getUrl();\n      fileId = newFile.getId();\n    }\n\n    var timestamp = Utilities.formatDate(new Date(), \"Asia/Bangkok\", \"dd/MM/yyyy HH:mm:ss\");\n\n    // 4. บันทึกแยกระหว่างปี 2569 และ 2570\n    if (year === 2570 || payload.surveyData) {\n      var sheetName70 = \"สรุปผลแบบสำรวจ_2570\";\n      var sheetFile70 = getOrCreateSpreadsheet(rootFolder, sheetName70, 2570);\n      var sheet70 = sheetFile70.getActiveSheet();\n      var sur = payload.surveyData || {};\n      var sCounts = sur.counts || {};\n\n      sheet70.appendRow([\n        timestamp,\n        hospitalName,\n        district,\n        sur.targetTotal || 0,\n        sur.requestedDoses || 0,\n        sur.coordinatorName || \"\",\n        sur.coordinatorPhone || \"\",\n        sur.coordinatorPosition || \"\",\n        sur.notes || \"\",\n        sCounts.doctors || 0,\n        sCounts.pharmacists || 0,\n        sCounts.nurses || 0,\n        sCounts.lab || 0,\n        sCounts.publicHealth || 0,\n        sCounts.interns || 0,\n        sCounts.medicalOtherRisk || 0,\n        sCounts.medicalOther || 0,\n        sCounts.investigation || 0,\n        sCounts.livestock || 0,\n        sCounts.fieldOtherRisk || 0,\n        sCounts.fieldOther || 0\n      ]);\n\n      return responseJSON({\n        status: \"success\",\n        message: \"บันทึกแบบสำรวจปี 2570 เรียบร้อยแล้ว\",\n        folderUrl: hospFolder.getUrl()\n      });\n\n    } else {\n      var sheetName69 = \"สรุปผลรายงานวัคซีน_2569\";\n      var sheetFile69 = getOrCreateSpreadsheet(rootFolder, sheetName69, 2569);\n      var sheet69 = sheetFile69.getActiveSheet();\n      var rep = payload.reportData || {};\n      var counts = rep.counts || {};\n\n      sheet69.appendRow([\n        timestamp,\n        hospitalName,\n        district,\n        rep.allocated || 0,\n        rep.vaccinated || 0,\n        fileName ? fileName : \"ไม่มีไฟล์แนบ\",\n        fileUrl ? fileUrl : \"-\",\n        counts.doctors || 0,\n        counts.pharmacists || 0,\n        counts.nurses || 0,\n        counts.lab || 0,\n        counts.publicHealth || 0,\n        counts.interns || 0,\n        counts.medicalOtherRisk || 0,\n        counts.medicalOther || 0,\n        counts.investigation || 0,\n        counts.livestock || 0,\n        counts.fieldOtherRisk || 0,\n        counts.fieldOther || 0\n      ]);\n\n      return responseJSON({\n        status: \"success\",\n        message: \"บันทึกข้อมูลและไฟล์ลง Google Drive เรียบร้อยแล้ว\",\n        fileUrl: fileUrl,\n        fileId: fileId,\n        folderUrl: hospFolder.getUrl()\n      });\n    }\n\n  } catch (err) {\n    return responseJSON({\n      status: \"error\",\n      message: \"เกิดข้อผิดพลาด: \" + err.toString()\n    });\n  }\n}\n\n// =========================================================================\n// GET: ส่งข้อมูลสดจาก Google Sheets กลับไปยังหน้าเว็บ (Live Cloud Sync)\n// =========================================================================\nfunction doGet(e) {\n  try {\n    var folderId = \"1nnCxIy97p33HCx3KGrxj8a90RZOBmwjw\";\n    var rootFolder;\n    try {\n      rootFolder = DriveApp.getFolderById(folderId);\n    } catch (e) {\n      rootFolder = getOrCreateFolder(DriveApp.getRootFolder(), \"วัคซีนไข้หวัดใหญ่_กาฬสินธุ์_เอกสารแนบ\");\n    }\n\n    var result = {\n      status: \"success\",\n      updatedAt: Utilities.formatDate(new Date(), \"Asia/Bangkok\", \"yyyy-MM-dd'T'HH:mm:ssXXX\"),\n      reports2569: {},\n      surveys2570: {},\n      files2569: {}\n    };\n\n    // 1. อ่านข้อมูลปี 2569\n    var files69 = rootFolder.getFilesByName(\"สรุปผลรายงานวัคซีน_2569\");\n    if (files69.hasNext()) {\n      var ss69 = SpreadsheetApp.open(files69.next());\n      var sheet69 = ss69.getActiveSheet();\n      var data69 = sheet69.getDataRange().getValues();\n      for (var i = 1; i < data69.length; i++) {\n        var row = data69[i];\n        var timeStr = String(row[0] || \"\");\n        var hospName = String(row[1] || \"\").trim();\n        var dist = String(row[2] || \"\").trim();\n        var alloc = Number(row[3]) || 0;\n        var vax = Number(row[4]) || 0;\n        var fName = String(row[5] || \"\");\n        var fUrl = String(row[6] || \"\");\n\n        if (!hospName) continue;\n        var hospId = findHospitalIdByName(hospName);\n\n        var counts = {\n          doctors: Number(row[7]) || 0,\n          pharmacists: Number(row[8]) || 0,\n          nurses: Number(row[9]) || 0,\n          lab: Number(row[10]) || 0,\n          publicHealth: Number(row[11]) || 0,\n          interns: Number(row[12]) || 0,\n          medicalOtherRisk: Number(row[13]) || 0,\n          medicalOther: Number(row[14]) || 0,\n          investigation: Number(row[15]) || 0,\n          livestock: Number(row[16]) || 0,\n          fieldOtherRisk: Number(row[17]) || 0,\n          fieldOther: Number(row[18]) || 0\n        };\n\n        // เก็บแถวล่าสุดของแต่ละโรงพยาบาล\n        result.reports2569[hospId] = {\n          hospitalId: hospId,\n          year: 2569,\n          allocated: alloc,\n          vaccinated: vax,\n          counts: counts,\n          updatedAt: timeStr\n        };\n\n        // สะสมไฟล์แนบทั้งหมด\n        if (fUrl && fUrl !== \"-\" && fUrl.indexOf(\"http\") === 0) {\n          if (!result.files2569[hospId]) {\n            result.files2569[hospId] = [];\n          }\n          var exists = result.files2569[hospId].some(function(item) {\n            return item.driveUrl === fUrl;\n          });\n          if (!exists) {\n            result.files2569[hospId].push({\n              name: fName && fName !== \"ไม่มีไฟล์แนบ\" ? fName : \"เอกสารแนบ\",\n              driveUrl: fUrl,\n              date: timeStr\n            });\n          }\n        }\n      }\n    }\n\n    // 2. อ่านข้อมูลแบบสำรวจปี 2570\n    var files70 = rootFolder.getFilesByName(\"สรุปผลแบบสำรวจ_2570\");\n    if (files70.hasNext()) {\n      var ss70 = SpreadsheetApp.open(files70.next());\n      var sheet70 = ss70.getActiveSheet();\n      var data70 = sheet70.getDataRange().getValues();\n      for (var j = 1; j < data70.length; j++) {\n        var row70 = data70[j];\n        var hospName70 = String(row70[1] || \"\").trim();\n        if (!hospName70) continue;\n        var hospId70 = findHospitalIdByName(hospName70);\n\n        result.surveys2570[hospId70] = {\n          hospitalId: hospId70,\n          year: 2570,\n          targetTotal: Number(row70[3]) || 0,\n          requestedDoses: Number(row70[4]) || 0,\n          coordinatorName: String(row70[5] || \"\"),\n          coordinatorPhone: String(row70[6] || \"\"),\n          coordinatorPosition: String(row70[7] || \"\"),\n          notes: String(row70[8] || \"\"),\n          counts: {\n            doctors: Number(row70[9]) || 0,\n            pharmacists: Number(row70[10]) || 0,\n            nurses: Number(row70[11]) || 0,\n            lab: Number(row70[12]) || 0,\n            publicHealth: Number(row70[13]) || 0,\n            interns: Number(row70[14]) || 0,\n            medicalOtherRisk: Number(row70[15]) || 0,\n            medicalOther: Number(row70[16]) || 0,\n            investigation: Number(row70[17]) || 0,\n            livestock: Number(row70[18]) || 0,\n            fieldOtherRisk: Number(row70[19]) || 0,\n            fieldOther: Number(row70[20]) || 0\n          },\n          updatedAt: String(row70[0] || \"\")\n        };\n      }\n    }\n\n    return responseJSON(result);\n\n  } catch (err) {\n    return responseJSON({\n      status: \"error\",\n      message: \"เกิดข้อผิดพลาดในการอ่านข้อมูล: \" + err.toString()\n    });\n  }\n}\n\n// ช่วยจับคู่ชื่อโรงพยาบาลเป็น ID ระบบ\nfunction findHospitalIdByName(name) {\n  var mapping = {\n    \"โรงพยาบาลกาฬสินธุ์\": \"kalasin\",\n    \"โรงพยาบาลนามน\": \"namon\",\n    \"โรงพยาบาลกมลาไสย\": \"kamalasai\",\n    \"โรงพยาบาลร่องคำ\": \"rongkham\",\n    \"โรงพยาบาลสมเด็จพระยุพราชกุฉินารายณ์\": \"kuchinarai\",\n    \"โรงพยาบาลเขาวง\": \"khaowong\",\n    \"โรงพยาบาลยางตลาด\": \"yangtalat\",\n    \"โรงพยาบาลห้วยเม็ก\": \"huaymek\",\n    \"โรงพยาบาลสหัสขันธ์\": \"sahatsakhan\",\n    \"โรงพยาบาลคำม่วง\": \"khammuang\",\n    \"โรงพยาบาลท่าคันโท\": \"thakhantho\",\n    \"โรงพยาบาลหนองกุงศรี\": \"nongkungsri\",\n    \"โรงพยาบาลสมเด็จ\": \"somdet\",\n    \"โรงพยาบาลห้วยผึ้ง\": \"huayphueng\",\n    \"โรงพยาบาลนาคู\": \"nakhu\",\n    \"โรงพยาบาลฆ้องชัย\": \"khongchai\",\n    \"โรงพยาบาลดอนจาน\": \"donchan\",\n    \"โรงพยาบาลสามชัย\": \"samchai\",\n    \"ปศุสัตว์จังหวัดกาฬสินธุ์\": \"kalasin_livestock\"\n  };\n  return mapping[name] || name;\n}\n\n// ช่วยดึงหรือสร้างโฟลเดอร์\nfunction getOrCreateFolder(parentFolder, folderName) {\n  var folders = parentFolder.getFoldersByName(folderName);\n  if (folders.hasNext()) {\n    return folders.next();\n  }\n  return parentFolder.createFolder(folderName);\n}\n\n// ช่วยดึงหรือสร้าง Google Spreadsheet\nfunction getOrCreateSpreadsheet(folder, sheetName, year) {\n  var files = folder.getFilesByName(sheetName);\n  if (files.hasNext()) {\n    return SpreadsheetApp.open(files.next());\n  }\n\n  var ss = SpreadsheetApp.create(sheetName);\n  var file = DriveApp.getFileById(ss.getId());\n  folder.addFile(file);\n  DriveApp.getRootFolder().removeFile(file);\n\n  var sheet = ss.getActiveSheet();\n  var headers;\n\n  if (year === 2570) {\n    headers = [\n      \"วันเวลาที่บันทึก\",\n      \"หน่วยบริการ\",\n      \"อำเภอ\",\n      \"เป้าหมายรวม (ราย)\",\n      \"ยอดขอรับจัดสรร (โดส)\",\n      \"ชื่อผู้ประสานงาน\",\n      \"เบอร์โทรศัพท์\",\n      \"ตำแหน่ง\",\n      \"หมายเหตุ\",\n      \"แพทย์\",\n      \"เภสัชกร\",\n      \"พยาบาล\",\n      \"จนท.ห้องปฏิบัติการ\",\n      \"นักวิชาการ/จพ.สาธารณสุข\",\n      \"นักศึกษาฝึกงาน\",\n      \"จนท.กลุ่มเสี่ยงอื่น (รพ.)\",\n      \"อื่น ๆ (นอกกลุ่มเสี่ยง รพ.)\",\n      \"ทีมสอบสวนโรค\",\n      \"ทีมทำลายสัตว์ปีก/ปศุสัตว์\",\n      \"จนท.กลุ่มเสี่ยงอื่น (สสอ.)\",\n      \"อื่น ๆ (นอกกลุ่มเสี่ยง สสอ.)\"\n    ];\n  } else {\n    headers = [\n      \"วันเวลาที่บันทึก\",\n      \"หน่วยบริการ\",\n      \"อำเภอ\",\n      \"ยอดจัดสรร (โดส)\",\n      \"ยอดฉีดจริง (ราย)\",\n      \"ชื่อเอกสารแนบ\",\n      \"ลิงก์ไฟล์ Google Drive\",\n      \"แพทย์\",\n      \"เภสัชกร\",\n      \"พยาบาล\",\n      \"จนท.ห้องปฏิบัติการ\",\n      \"นักวิชาการ/จพ.สาธารณสุข\",\n      \"นักศึกษาฝึกงาน\",\n      \"จนท.กลุ่มเสี่ยงอื่น (รพ.)\",\n      \"อื่น ๆ (นอกกลุ่มเสี่ยง รพ.)\",\n      \"ทีมสอบสวนโรค\",\n      \"ทีมทำลายสัตว์ปีก/ปศุสัตว์\",\n      \"จนท.กลุ่มเสี่ยงอื่น (สสอ.)\",\n      \"อื่น ๆ (นอกกลุ่มเสี่ยง สสอ.)\"\n    ];\n  }\n\n  sheet.appendRow(headers);\n  var headerRange = sheet.getRange(1, 1, 1, headers.length);\n  headerRange.setFontWeight(\"bold\");\n  headerRange.setBackground(year === 2570 ? \"#0369a1\" : \"#0f766e\");\n  headerRange.setFontColor(\"#ffffff\");\n  headerRange.setHorizontalAlignment(\"center\");\n  sheet.setFrozenRows(1);\n\n  return ss;\n}\n\n// ส่งคืน JSON Output พร้อม CORS\nfunction responseJSON(obj) {\n  return ContentService.createTextOutput(JSON.stringify(obj))\n    .setMimeType(ContentService.MimeType.JSON);\n}\n";
 
     function getGasUrl() {
       return (localStorage.getItem(KEY_GAS_URL) || DEFAULT_GAS_URL).trim();
@@ -989,6 +1013,97 @@
     }
     function saveFiles(data) {
       localStorage.setItem(KEY_FILES, JSON.stringify(data));
+    }
+
+    // ==========================================
+    // LIVE CLOUD SYNC LOGIC (GOOGLE SHEETS SYNC)
+    // ==========================================
+    let isCloudSyncing = false;
+    let lastSyncDate = null;
+
+    async function syncFromCloud(showToast = false) {
+      const gasUrl = getGasUrl();
+      if (!gasUrl || isCloudSyncing) return;
+
+      isCloudSyncing = true;
+      const syncBtn = document.getElementById("btn-cloud-sync");
+      const syncIcon = document.getElementById("icon-cloud-sync");
+      const syncText = document.getElementById("text-cloud-sync");
+      const syncTimeBadge = document.getElementById("badge-sync-time");
+
+      if (syncIcon) syncIcon.classList.add("animate-spin");
+      if (syncText) syncText.innerText = "กำลังซิงค์...";
+
+      try {
+        const res = await fetch(gasUrl, { redirect: "follow" });
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          // Old GAS version or not yet deployed with doGet
+          if (showToast) {
+            alert("⚠️ ยังไม่ได้อัปเดตโค้ดใน Google Apps Script ให้รองรับระบบ Live Sync\n\n(กรุณากด 'ตั้งค่า Google Drive (GAS)' ด้านซ้าย แล้วคัดลอกโค้ดสคริปต์ไปวางทับใน Apps Script แล้วกด Deploy ใหม่)");
+          }
+          return;
+        }
+
+        if (data && data.status === "success") {
+          let updatedCount = 0;
+
+          // 1. Merge reports 2569
+          if (data.reports2569 && typeof data.reports2569 === "object") {
+            const curReports = loadReports();
+            Object.keys(data.reports2569).forEach(hid => {
+              curReports[hid] = Object.assign({}, curReports[hid] || {}, data.reports2569[hid]);
+              updatedCount++;
+            });
+            saveReports(curReports);
+          }
+
+          // 2. Merge files 2569
+          if (data.files2569 && typeof data.files2569 === "object") {
+            const curFiles = loadFiles();
+            Object.keys(data.files2569).forEach(hid => {
+              curFiles[hid] = data.files2569[hid];
+            });
+            saveFiles(curFiles);
+          }
+
+          // 3. Merge surveys 2570
+          if (data.surveys2570 && typeof data.surveys2570 === "object") {
+            const curSurveys = loadSurveys();
+            Object.keys(data.surveys2570).forEach(hid => {
+              curSurveys[hid] = Object.assign({}, curSurveys[hid] || {}, data.surveys2570[hid]);
+              updatedCount++;
+            });
+            saveSurveys(curSurveys);
+          }
+
+          lastSyncDate = new Date();
+          const timeStr = lastSyncDate.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+          if (syncTimeBadge) {
+            syncTimeBadge.innerText = `(${timeStr} น.)`;
+          }
+
+          renderAll();
+
+          if (showToast) {
+            alert(`✅ ซิงค์ข้อมูลล่าสุดจาก Google Sheets สำเร็จ! (ข้อมูลอัปเดตล่าสุด: ${timeStr} น.)`);
+          }
+        } else if (data && data.status === "error" && showToast) {
+          alert("⚠️ เกิดข้อผิดพลาดจาก Google Apps Script: " + data.message);
+        }
+      } catch (err) {
+        console.error("Live cloud sync error:", err);
+        if (showToast) {
+          alert("⚠️ ไม่สามารถเชื่อมต่อ Google Sheets เพื่อดึงข้อมูลได้ในขณะนี้ กรุณาตรวจสอบอินเทอร์เน็ต");
+        }
+      } finally {
+        isCloudSyncing = false;
+        if (syncIcon) syncIcon.classList.remove("animate-spin");
+        if (syncText) syncText.innerText = "ซิงค์ข้อมูลล่าสุด";
+      }
     }
 
     // Number formatter
@@ -1905,9 +2020,47 @@
         } else {
           alert("✅ บันทึกข้อมูลในเครื่องเรียบร้อยแล้ว\n\n(คำแนะนำ: สามารถกดปุ่ม 'ตั้งค่า Google Drive (GAS)' ที่แถบด้านซ้าย เพื่อส่งไฟล์เข้า Drive ของ สสจ. อัตโนมัติ)");
         }
+
+        // Trigger background sync
+        syncFromCloud(false);
       } else {
         const surveys = loadSurveys();
         const target = Math.max(0, parseInt(document.getElementById("input-target-total").value, 10) || 0);
+        let driveSurveySuccess = false;
+
+        if (gasUrl) {
+          setSaveLoadingText("กำลังส่งแบบสำรวจเข้า Google Sheets สสจ....");
+          try {
+            const payload = {
+              hospitalId: editingHospitalId,
+              hospitalName: hosp?.name || editingHospitalId,
+              district: hosp?.district || "",
+              year: 2570,
+              surveyData: {
+                targetTotal: target,
+                requestedDoses: totalDoses,
+                coordinatorName: document.getElementById("input-coord-name").value.trim(),
+                coordinatorPhone: document.getElementById("input-coord-phone").value.trim(),
+                coordinatorPosition: document.getElementById("input-coord-pos").value.trim(),
+                notes: document.getElementById("input-notes").value.trim(),
+                counts: counts
+              }
+            };
+            const res = await fetch(gasUrl, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.status === "success") {
+              driveSurveySuccess = true;
+            }
+          } catch (err) {
+            console.error("GAS survey sync error:", err);
+          } finally {
+            restoreSaveButton();
+          }
+        }
 
         surveys[editingHospitalId] = {
           hospitalId: editingHospitalId,
@@ -1925,7 +2078,15 @@
 
         closeFormModal();
         renderAll();
-        alert("✅ บันทึกแบบสำรวจปี 2570 เรียบร้อยแล้ว!");
+
+        if (driveSurveySuccess) {
+          alert("✅ บันทึกแบบสำรวจปี 2570 และส่งเข้า Google Sheets สสจ. เรียบร้อยแล้ว!");
+        } else {
+          alert("✅ บันทึกแบบสำรวจปี 2570 เรียบร้อยแล้ว!");
+        }
+
+        // Trigger background sync to refresh all counts
+        syncFromCloud(false);
       }
     }
 
@@ -2219,6 +2380,9 @@
       if (hosp) {
         openFormModal(hosp);
       }
+
+      // Auto-sync latest data from Google Sheets in the background on load
+      syncFromCloud(false);
     });
   </script>
 </body>
