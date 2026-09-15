@@ -1896,11 +1896,26 @@
 
     function removeTempFile(idx) {
       const removed = tempFiles[idx];
-      if (removed && removed.driveUrl) {
-        pendingDeletedDriveUrls.push(removed.driveUrl);
+      if (removed && removed.driveUrl && editingHospitalId) {
+        // 1. บันทึกเข้า Blacklist ทันที ป้องกันไม่ให้ Live Cloud Sync ดึงกลับมา
+        const delMap = loadDeletedFiles();
+        if (!delMap[editingHospitalId]) delMap[editingHospitalId] = [];
+        if (!delMap[editingHospitalId].includes(removed.driveUrl)) {
+          delMap[editingHospitalId].push(removed.driveUrl);
+          saveDeletedFiles(delMap);
+        }
+
+        // 2. ลบออกจากข้อมูลที่เซฟไว้ของ รพ. ทันที
+        const curFiles = loadFiles();
+        if (curFiles[editingHospitalId]) {
+          curFiles[editingHospitalId] = curFiles[editingHospitalId].filter(f => f.driveUrl !== removed.driveUrl);
+          saveFiles(curFiles);
+        }
       }
+
       tempFiles.splice(idx, 1);
       renderFileList();
+      renderTableAndCards();
     }
 
     function renderFileList() {
