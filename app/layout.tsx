@@ -11,7 +11,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "ระบบรายงานวัคซีนไข้หวัดใหญ่บุคลากร | จังหวัดกาฬสินธุ์",
-  description: "บันทึกและติดตามผลการฉีดวัคซีนไข้หวัดใหญ่ของบุคลากรในโรงพยาบาลจังหวัดกาฬสินธุ์ 18 แห่ง",
+  description: "บันทึกและติดตามผลการฉีดวัคซีนไข้หวัดใหญ่ของบุคลากรในโรงพยาบาลจังหวัดกาฬสินธุ์ 19 หน่วยงาน",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

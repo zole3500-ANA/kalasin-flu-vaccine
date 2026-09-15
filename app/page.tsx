@@ -599,7 +599,7 @@ export default function Home() {
               <span className="gdrive-dot" />
               <span>Google Drive: เชื่อมต่อแล้ว (G:\My Drive)</span>
             </div>
-            <span className="status-dot" style={{ marginLeft: "6px" }} /> กาฬสินธุ์ · 18 แห่ง
+            <span className="status-dot" style={{ marginLeft: "6px" }} /> กาฬสินธุ์ · 19 หน่วยงาน
           </div>
         </header>
 
@@ -615,7 +615,7 @@ export default function Home() {
               <p>
                 {mode === "report_2569"
                   ? "ติดตามการจัดสรร การให้บริการ และเอกสารรายชื่อผู้ได้รับวัคซีนของโรงพยาบาลในจังหวัดกาฬสินธุ์"
-                  : "สำรวจและรวบรวมยอดความต้องการขอรับจัดสรรวัคซีนล่วงหน้าสำหรับปีงบประมาณ 2570 ของหน่วยบริการ 18 แห่ง"}
+                  : "สำรวจและรวบรวมยอดความต้องการขอรับจัดสรรวัคซีนล่วงหน้าสำหรับปีงบประมาณ 2570 ของหน่วยงาน 19 แห่ง"}
               </p>
             </div>
 
@@ -698,7 +698,7 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="stat-value">
-                  {loading ? "—" : number(recordedCount2569)} <small>/ 18 แห่ง</small>
+                  {loading ? "—" : number(recordedCount2569)} <small>/ 19 หน่วยงาน</small>
                 </div>
                 <div className="stat-foot">จำนวนหน่วยงานที่ส่งผลการฉีดปี 2569</div>
               </div>
@@ -748,7 +748,7 @@ export default function Home() {
                     </span>
                   </div>
                   <div className="stat-value">
-                    {loading ? "—" : number(submittedCount2570)} <small>/ 18 แห่ง</small>
+                    {loading ? "—" : number(submittedCount2570)} <small>/ 19 หน่วยงาน</small>
                   </div>
                   <div className="stat-foot">ความคืบหน้าการส่งแบบสำรวจปี 2570</div>
                 </div>
@@ -1163,7 +1163,7 @@ export default function Home() {
             </div>
 
             <div className="table-footer">
-              แสดง {filtered.length} จาก 18 โรงพยาบาล
+              แสดง {filtered.length} จาก 19 หน่วยงาน
               <span>
                 {mode === "report_2569"
                   ? "อัปเดตตามข้อมูลผลการฉีดที่บันทึกจริง ปี 2569"
@@ -1560,7 +1560,7 @@ export default function Home() {
               {mode === "report_2569" ? (
                 <>
                   <div className="print-meta-item">
-                    รายงานแล้ว: <strong>{recordedCount2569} / 18 แห่ง</strong>
+                    รายงานแล้ว: <strong>{recordedCount2569} / 19 หน่วยงาน</strong>
                   </div>
                   <div className="print-meta-item">
                     ยอดจัดสรรรวม: <strong>{number(allocatedTotal2569)} โดส</strong>
@@ -1572,7 +1572,7 @@ export default function Home() {
               ) : (
                 <>
                   <div className="print-meta-item">
-                    ส่งแบบสำรวจแล้ว: <strong>{submittedCount2570} / 18 แห่ง</strong>
+                    ส่งแบบสำรวจแล้ว: <strong>{submittedCount2570} / 19 หน่วยงาน</strong>
                   </div>
                   <div className="print-meta-item">
                     เป้าหมายบุคลากรรวม: <strong>{number(targetTotal2570)} ราย</strong>
@@ -1651,12 +1651,12 @@ export default function Home() {
                 })}
                 <tr className="total-row">
                   <td colSpan={3} style={{ textAlign: "center" }}>
-                    รวมทั้งสิ้น (18 อำเภอ)
+                    รวมทั้งสิ้น (19 หน่วยงาน)
                   </td>
                   <td style={{ textAlign: "center" }}>
                     {mode === "report_2569"
-                      ? `${recordedCount2569}/18 แห่ง`
-                      : `${submittedCount2570}/18 แห่ง`}
+                      ? `${recordedCount2569}/19 แห่ง`
+                      : `${submittedCount2570}/19 แห่ง`}
                   </td>
                   {mode === "report_2569" ? (
                     <>
@@ -1746,7 +1746,7 @@ export default function Home() {
           }}
         >
           <Activity size={20} />
-          <span>ผลฉีด 2569 ({recordedCount2569}/18)</span>
+          <span>ผลฉีด 2569 ({recordedCount2569}/19)</span>
         </button>
 
         <button
@@ -1759,7 +1759,7 @@ export default function Home() {
           }}
         >
           <ClipboardList size={20} />
-          <span>สำรวจ 2570 ({submittedCount2570}/18)</span>
+          <span>สำรวจ 2570 ({submittedCount2570}/19)</span>
         </button>
       </nav>
     </div>

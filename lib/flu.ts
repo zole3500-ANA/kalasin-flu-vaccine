@@ -17,6 +17,7 @@ export const hospitals = [
   { id: "khongchai", name: "โรงพยาบาลฆ้องชัย", district: "ฆ้องชัย", type: "โรงพยาบาลชุมชน" },
   { id: "donchan", name: "โรงพยาบาลดอนจาน", district: "ดอนจาน", type: "โรงพยาบาลชุมชน" },
   { id: "samchai", name: "โรงพยาบาลสามชัย", district: "สามชัย", type: "โรงพยาบาลชุมชน" },
+  { id: "kalasin_livestock", name: "ปศุสัตว์จังหวัดกาฬสินธุ์", district: "เมืองกาฬสินธุ์", type: "หน่วยงานภาคีเครือข่าย" },
 ] as const;
 
 export const categories = [
