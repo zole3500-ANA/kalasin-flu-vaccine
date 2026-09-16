@@ -879,25 +879,25 @@
     // 1. DATA DEFINITIONS & CONSTANTS
     // ==========================================
     const hospitals = [
-      { id: "kalasin", name: "โรงพยาบาลกาฬสินธุ์", district: "เมืองกาฬสินธุ์", type: "โรงพยาบาลทั่วไป" },
-      { id: "namon", name: "โรงพยาบาลนามน", district: "นามน", type: "โรงพยาบาลชุมชน" },
-      { id: "kamalasai", name: "โรงพยาบาลกมลาไสย", district: "กมลาไสย", type: "โรงพยาบาลชุมชน" },
-      { id: "rongkham", name: "โรงพยาบาลร่องคำ", district: "ร่องคำ", type: "โรงพยาบาลชุมชน" },
-      { id: "kuchinarai", name: "โรงพยาบาลสมเด็จพระยุพราชกุฉินารายณ์", district: "กุฉินารายณ์", type: "โรงพยาบาลชุมชน" },
-      { id: "khaowong", name: "โรงพยาบาลเขาวง", district: "เขาวง", type: "โรงพยาบาลชุมชน" },
-      { id: "yangtalat", name: "โรงพยาบาลยางตลาด", district: "ยางตลาด", type: "โรงพยาบาลชุมชน" },
-      { id: "huaymek", name: "โรงพยาบาลห้วยเม็ก", district: "ห้วยเม็ก", type: "โรงพยาบาลชุมชน" },
-      { id: "sahatsakhan", name: "โรงพยาบาลสหัสขันธ์", district: "สหัสขันธ์", type: "โรงพยาบาลชุมชน" },
-      { id: "khammuang", name: "โรงพยาบาลคำม่วง", district: "คำม่วง", type: "โรงพยาบาลชุมชน" },
-      { id: "thakhantho", name: "โรงพยาบาลท่าคันโท", district: "ท่าคันโท", type: "โรงพยาบาลชุมชน" },
-      { id: "nongkungsri", name: "โรงพยาบาลหนองกุงศรี", district: "หนองกุงศรี", type: "โรงพยาบาลชุมชน" },
-      { id: "somdet", name: "โรงพยาบาลสมเด็จ", district: "สมเด็จ", type: "โรงพยาบาลชุมชน" },
-      { id: "huayphueng", name: "โรงพยาบาลห้วยผึ้ง", district: "ห้วยผึ้ง", type: "โรงพยาบาลชุมชน" },
-      { id: "nakhu", name: "โรงพยาบาลนาคู", district: "นาคู", type: "โรงพยาบาลชุมชน" },
-      { id: "khongchai", name: "โรงพยาบาลฆ้องชัย", district: "ฆ้องชัย", type: "โรงพยาบาลชุมชน" },
-      { id: "donchan", name: "โรงพยาบาลดอนจาน", district: "ดอนจาน", type: "โรงพยาบาลชุมชน" },
-      { id: "samchai", name: "โรงพยาบาลสามชัย", district: "สามชัย", type: "โรงพยาบาลชุมชน" },
-      { id: "kalasin_livestock", name: "ปศุสัตว์จังหวัดกาฬสินธุ์", district: "เมืองกาฬสินธุ์", type: "หน่วยงานภาคีเครือข่าย" },
+      { id: "kalasin", name: "โรงพยาบาลกาฬสินธุ์", district: "เมืองกาฬสินธุ์", type: "โรงพยาบาลทั่วไป", allocated2569: 0 },
+      { id: "namon", name: "โรงพยาบาลนามน", district: "นามน", type: "โรงพยาบาลชุมชน", allocated2569: 210 },
+      { id: "kamalasai", name: "โรงพยาบาลกมลาไสย", district: "กมลาไสย", type: "โรงพยาบาลชุมชน", allocated2569: 340 },
+      { id: "rongkham", name: "โรงพยาบาลร่องคำ", district: "ร่องคำ", type: "โรงพยาบาลชุมชน", allocated2569: 150 },
+      { id: "kuchinarai", name: "โรงพยาบาลสมเด็จพระยุพราชกุฉินารายณ์", district: "กุฉินารายณ์", type: "โรงพยาบาลชุมชน", allocated2569: 530 },
+      { id: "khaowong", name: "โรงพยาบาลเขาวง", district: "เขาวง", type: "โรงพยาบาลชุมชน", allocated2569: 290 },
+      { id: "yangtalat", name: "โรงพยาบาลยางตลาด", district: "ยางตลาด", type: "โรงพยาบาลชุมชน", allocated2569: 710 },
+      { id: "huaymek", name: "โรงพยาบาลห้วยเม็ก", district: "ห้วยเม็ก", type: "โรงพยาบาลชุมชน", allocated2569: 250 },
+      { id: "sahatsakhan", name: "โรงพยาบาลสหัสขันธ์", district: "สหัสขันธ์", type: "โรงพยาบาลชุมชน", allocated2569: 420 },
+      { id: "khammuang", name: "โรงพยาบาลคำม่วง", district: "คำม่วง", type: "โรงพยาบาลชุมชน", allocated2569: 230 },
+      { id: "thakhantho", name: "โรงพยาบาลท่าคันโท", district: "ท่าคันโท", type: "โรงพยาบาลชุมชน", allocated2569: 180 },
+      { id: "nongkungsri", name: "โรงพยาบาลหนองกุงศรี", district: "หนองกุงศรี", type: "โรงพยาบาลชุมชน", allocated2569: 220 },
+      { id: "somdet", name: "โรงพยาบาลสมเด็จ", district: "สมเด็จ", type: "โรงพยาบาลชุมชน", allocated2569: 420 },
+      { id: "huayphueng", name: "โรงพยาบาลห้วยผึ้ง", district: "ห้วยผึ้ง", type: "โรงพยาบาลชุมชน", allocated2569: 190 },
+      { id: "nakhu", name: "โรงพยาบาลนาคู", district: "นาคู", type: "โรงพยาบาลชุมชน", allocated2569: 220 },
+      { id: "khongchai", name: "โรงพยาบาลฆ้องชัย", district: "ฆ้องชัย", type: "โรงพยาบาลชุมชน", allocated2569: 170 },
+      { id: "donchan", name: "โรงพยาบาลดอนจาน", district: "ดอนจาน", type: "โรงพยาบาลชุมชน", allocated2569: 200 },
+      { id: "samchai", name: "โรงพยาบาลสามชัย", district: "สามชัย", type: "โรงพยาบาลชุมชน", allocated2569: 200 },
+      { id: "kalasin_livestock", name: "ปศุสัตว์จังหวัดกาฬสินธุ์", district: "เมืองกาฬสินธุ์", type: "หน่วยงานภาคีเครือข่าย", allocated2569: 40 },
     ];
 
     const categories = [
@@ -1121,7 +1121,13 @@
           if (data.reports2569 && typeof data.reports2569 === "object") {
             const curReports = loadReports();
             Object.keys(data.reports2569).forEach(hid => {
-              curReports[hid] = Object.assign({}, curReports[hid] || {}, data.reports2569[hid]);
+              const cloudRep = data.reports2569[hid];
+              const h = hospitals.find(x => x.id === hid);
+              // หากยอดจัดสรรจาก Cloud เป็น 0 หรือยังไม่ได้ระบุ ให้เติมยอดจัดสรรทางการอัตโนมัติ
+              if ((!cloudRep.allocated || cloudRep.allocated === 0) && h && h.allocated2569) {
+                cloudRep.allocated = h.allocated2569;
+              }
+              curReports[hid] = Object.assign({}, curReports[hid] || {}, cloudRep);
               updatedCount++;
             });
             saveReports(curReports);
@@ -1329,7 +1335,11 @@
 
       // Counts
       const reportedCount69 = Object.keys(reports).length;
-      const totalAlloc69 = Object.values(reports).reduce((s, r) => s + (r.allocated || 0), 0);
+      const totalAlloc69 = hospitals.reduce((sum, h) => {
+        const r = reports[h.id];
+        const a = (r && r.allocated > 0) ? r.allocated : (h.allocated2569 || 0);
+        return sum + a;
+      }, 0);
       const totalVax69 = Object.values(reports).reduce((s, r) => s + (r.vaccinated || 0), 0);
       const remaining69 = Math.max(0, totalAlloc69 - totalVax69);
       const pct69 = totalAlloc69 > 0 ? Math.round((totalVax69 / totalAlloc69) * 100) : 0;
@@ -1372,7 +1382,7 @@
               <i data-lucide="clipboard-list" class="w-4 h-4 text-slate-400"></i>
             </div>
             <div class="text-2xl font-bold font-heading text-slate-900">${fNum(totalAlloc69)} <span class="text-sm font-normal text-slate-500">โดส</span></div>
-            <div class="text-xs text-slate-500 mt-1">ยอดจัดสรรรวมจากหน่วยงานที่ส่งรายงาน</div>
+            <div class="text-xs text-slate-500 mt-1">ยอดจัดสรรรวมทั้งจังหวัด ปี 2569</div>
           </div>
           <div class="bg-teal-700 text-white p-4 rounded-xl shadow-sm">
             <div class="flex items-center justify-between mb-2">
@@ -1509,9 +1519,11 @@
         tr.className = "hover:bg-slate-50/80 transition-colors";
         
         if (is2569) {
-          const alloc = rep ? fNum(rep.allocated) : "—";
+          const repAlloc = rep ? rep.allocated : 0;
+          const allocVal = repAlloc > 0 ? repAlloc : (h.allocated2569 || 0);
+          const alloc = allocVal > 0 ? fNum(allocVal) : "—";
           const vax = rep ? fNum(rep.vaccinated) : "—";
-          const pct = rep && rep.allocated > 0 ? `${Math.round((rep.vaccinated / rep.allocated) * 100)}%` : "—";
+          const pct = (rep && allocVal > 0) ? `${Math.round((rep.vaccinated / allocVal) * 100)}%` : "—";
           const fileBadge = hospFiles.length > 0 
             ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-[11px] font-medium border border-teal-200"><i data-lucide="paperclip" class="w-3 h-3 mr-1"></i>${hospFiles.length} ไฟล์</span>`
             : `<span class="text-slate-400">—</span>`;
@@ -1575,15 +1587,15 @@
             <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-2.5 rounded-lg text-xs">
               <div>
                 <span class="text-slate-400 text-[10px] block">จัดสรร</span>
-                <strong class="text-slate-800">${rep ? fNum(rep.allocated) : "—"}</strong>
+                <strong class="text-slate-800">${alloc}</strong>
               </div>
               <div>
                 <span class="text-slate-400 text-[10px] block">ฉีดแล้ว</span>
-                <strong class="text-teal-700">${rep ? fNum(rep.vaccinated) : "—"}</strong>
+                <strong class="text-teal-700">${vax}</strong>
               </div>
               <div>
                 <span class="text-slate-400 text-[10px] block">ครอบคลุม</span>
-                <strong class="text-slate-800">${rep && rep.allocated > 0 ? `${Math.round((rep.vaccinated / rep.allocated) * 100)}%` : "—"}</strong>
+                <strong class="text-slate-800">${pct}</strong>
               </div>
             </div>
             <div class="flex items-center justify-between pt-1">
@@ -1684,7 +1696,9 @@
         notesSection.classList.add("hidden");
 
         const rep = reports[hospitalId] || { allocated: 0, counts: {} };
-        document.getElementById("input-allocated").value = rep.allocated || 0;
+        const defaultAlloc = (hosp && hosp.allocated2569) ? hosp.allocated2569 : 0;
+        const currentAllocVal = (rep.allocated && rep.allocated > 0) ? rep.allocated : defaultAlloc;
+        document.getElementById("input-allocated").value = currentAllocVal;
         tempFiles = files[hospitalId] ? [...files[hospitalId]] : [];
         renderFormInputs(categories2569, rep.counts || {});
       } else {
@@ -2249,7 +2263,10 @@
         fiscalEl.innerText = "ประจำปีงบประมาณ พ.ศ. 2569";
 
         const repCount = Object.keys(reports).length;
-        const totalAlloc = Object.values(reports).reduce((s, r) => s + (r.allocated || 0), 0);
+        const totalAlloc = hospitals.reduce((sum, h) => {
+          const r = reports[h.id];
+          return sum + ((r && r.allocated > 0) ? r.allocated : (h.allocated2569 || 0));
+        }, 0);
         const totalVax = Object.values(reports).reduce((s, r) => s + (r.vaccinated || 0), 0);
         const pct = totalAlloc > 0 ? Math.round((totalVax / totalAlloc) * 100) : 0;
         const rem = Math.max(0, totalAlloc - totalVax);
@@ -2276,10 +2293,10 @@
         body.innerHTML = "";
         hospitals.forEach((h, i) => {
           const r = reports[h.id];
-          const alloc = r ? r.allocated : 0;
+          const alloc = (r && r.allocated > 0) ? r.allocated : (h.allocated2569 || 0);
           const vax = r ? r.vaccinated : 0;
-          const cov = r && alloc > 0 ? `${Math.round((vax / alloc) * 100)}%` : "—";
-          const left = r ? Math.max(0, alloc - vax) : 0;
+          const cov = (r && alloc > 0) ? `${Math.round((vax / alloc) * 100)}%` : "—";
+          const left = (r && alloc > 0) ? Math.max(0, alloc - vax) : alloc;
 
           const row = document.createElement("tr");
           row.className = "text-slate-800";
@@ -2288,10 +2305,10 @@
             <td class="p-2 border border-slate-300 font-bold">${h.name}</td>
             <td class="p-2 border border-slate-300 text-slate-600">${h.district}</td>
             <td class="p-2 border border-slate-300 text-center font-medium">${r ? "รายงานแล้ว" : "รอรายงาน"}</td>
-            <td class="p-2 border border-slate-300 text-right font-mono">${r ? fNum(alloc) : "—"}</td>
+            <td class="p-2 border border-slate-300 text-right font-mono">${alloc > 0 ? fNum(alloc) : "—"}</td>
             <td class="p-2 border border-slate-300 text-right font-mono font-bold">${r ? fNum(vax) : "—"}</td>
             <td class="p-2 border border-slate-300 text-center font-mono">${cov}</td>
-            <td class="p-2 border border-slate-300 text-right font-mono">${r ? fNum(left) : "—"}</td>
+            <td class="p-2 border border-slate-300 text-right font-mono">${r ? fNum(left) : (alloc > 0 ? fNum(alloc) : "—")}</td>
           `;
           body.appendChild(row);
         });
@@ -2398,9 +2415,9 @@
         // Rows
         hospitals.forEach((h, i) => {
           const r = reports[h.id];
-          const alloc = r ? r.allocated : 0;
+          const alloc = (r && r.allocated > 0) ? r.allocated : (h.allocated2569 || 0);
           const vax = r ? r.vaccinated : 0;
-          const pct = r && alloc > 0 ? Math.round((vax / alloc) * 100) : 0;
+          const pct = (r && alloc > 0) ? Math.round((vax / alloc) * 100) : 0;
           const status = r ? "รายงานแล้ว" : "รอรายงาน";
 
           const row = [i + 1, h.name, h.district, status, alloc, vax, `${pct}%`];
