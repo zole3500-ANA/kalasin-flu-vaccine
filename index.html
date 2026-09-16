@@ -1514,19 +1514,21 @@
           ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>${is2569 ? "รายงานแล้ว" : "ส่งแล้ว"}</span>`
           : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600"><span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>${is2569 ? "รอรายงาน" : "ยังไม่ส่ง"}</span>`;
 
+        // Calculated 2569 metrics (shared between desktop and mobile)
+        const repAlloc = rep ? rep.allocated : 0;
+        const allocVal = repAlloc > 0 ? repAlloc : (h.allocated2569 || 0);
+        const alloc = allocVal > 0 ? fNum(allocVal) : "—";
+        const vax = rep ? fNum(rep.vaccinated) : "—";
+        const pct = (rep && allocVal > 0) ? `${Math.round((rep.vaccinated / allocVal) * 100)}%` : "—";
+        const fileBadge = hospFiles.length > 0 
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-[11px] font-medium border border-teal-200"><i data-lucide="paperclip" class="w-3 h-3 mr-1"></i>${hospFiles.length} ไฟล์</span>`
+          : `<span class="text-slate-400">—</span>`;
+
         // Desktop Row
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50/80 transition-colors";
         
         if (is2569) {
-          const repAlloc = rep ? rep.allocated : 0;
-          const allocVal = repAlloc > 0 ? repAlloc : (h.allocated2569 || 0);
-          const alloc = allocVal > 0 ? fNum(allocVal) : "—";
-          const vax = rep ? fNum(rep.vaccinated) : "—";
-          const pct = (rep && allocVal > 0) ? `${Math.round((rep.vaccinated / allocVal) * 100)}%` : "—";
-          const fileBadge = hospFiles.length > 0 
-            ? `<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 text-[11px] font-medium border border-teal-200"><i data-lucide="paperclip" class="w-3 h-3 mr-1"></i>${hospFiles.length} ไฟล์</span>`
-            : `<span class="text-slate-400">—</span>`;
 
           tr.innerHTML = `
             <td class="py-3 px-4 text-center text-slate-400 font-mono">${String(idx + 1).padStart(2, '0')}</td>
